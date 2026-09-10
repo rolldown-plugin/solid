@@ -1,7 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform component with Memo 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, effect, insert, memo, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -53,9 +54,6 @@ function createSignal(value, options) {
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
-}
-function createRenderEffect(fn, value, options) {
-	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createEffect(fn, value, options) {
 	runEffects = runUserEffects;
@@ -411,260 +409,12 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
-const memo = (fn) => createMemo(() => fn());
-function reconcileArrays(parentNode, a, b) {
-	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
-	while (aStart < aEnd || bStart < bEnd) {
-		if (a[aStart] === b[bStart]) {
-			aStart++;
-			bStart++;
-			continue;
-		}
-		while (a[aEnd - 1] === b[bEnd - 1]) {
-			aEnd--;
-			bEnd--;
-		}
-		if (aEnd === aStart) {
-			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
-			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
-		} else if (bEnd === bStart) while (aStart < aEnd) {
-			if (!map || !map.has(a[aStart])) a[aStart].remove();
-			aStart++;
-		}
-		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
-			const node = a[--aEnd].nextSibling;
-			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
-			parentNode.insertBefore(b[--bEnd], node);
-			a[aEnd] = b[bEnd];
-		} else {
-			if (!map) {
-				map = /* @__PURE__ */ new Map();
-				let i = bStart;
-				while (i < bEnd) map.set(b[i], i++);
-			}
-			const index = map.get(a[aStart]);
-			if (index != null) {
-				if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-				} else aStart++;
-			} else a[aStart++].remove();
-		}
-	}
-}
-const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
-}
-function insertExpression(parent, value, current, marker, unwrapArray) {
-	const hydrating = isHydrating(parent);
-	if (hydrating) {
-		!current && (current = [...parent.childNodes]);
-		let cleaned = [];
-		for (let i = 0; i < current.length; i++) {
-			const node = current[i];
-			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
-			else cleaned.push(node);
-		}
-		current = cleaned;
-	}
-	while (typeof current === "function") current = current();
-	if (value === current) return current;
-	const t = typeof value, multi = marker !== void 0;
-	parent = multi && current[0] && current[0].parentNode || parent;
-	if (t === "string" || t === "number") {
-		if (hydrating) return current;
-		if (t === "number") {
-			value = value.toString();
-			if (value === current) return current;
-		}
-		if (multi) {
-			let node = current[0];
-			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
-			else node = document.createTextNode(value);
-			current = cleanChildren(parent, current, marker, node);
-		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
-		else current = parent.textContent = value;
-	} else if (value == null || t === "boolean") {
-		if (hydrating) return current;
-		current = cleanChildren(parent, current, marker);
-	} else if (t === "function") {
-		createRenderEffect(() => {
-			let v = value();
-			while (typeof v === "function") v = v();
-			current = insertExpression(parent, v, current, marker);
-		});
-		return () => current;
-	} else if (Array.isArray(value)) {
-		const array = [];
-		const currentArray = current && Array.isArray(current);
-		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
-			return () => current;
-		}
-		if (hydrating) {
-			if (!array.length) return current;
-			if (marker === void 0) return current = [...parent.childNodes];
-			let node = array[0];
-			if (node.parentNode !== parent) return current;
-			const nodes = [node];
-			while ((node = node.nextSibling) !== marker) nodes.push(node);
-			return current = nodes;
-		}
-		if (array.length === 0) {
-			current = cleanChildren(parent, current, marker);
-			if (multi) return current;
-		} else if (currentArray) {
-			if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-		} else {
-			current && cleanChildren(parent);
-			appendNodes(parent, array);
-		}
-		current = array;
-	} else if (value.nodeType) {
-		if (hydrating && value.parentNode) return current = multi ? [value] : value;
-		if (Array.isArray(current)) {
-			if (multi) return current = cleanChildren(parent, current, marker, value);
-			cleanChildren(parent, current, null, value);
-		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
-		else parent.replaceChild(value, parent.firstChild);
-		current = value;
-	}
-	return current;
-}
-function normalizeIncomingArray(normalized, array, current, unwrap) {
-	let dynamic = false;
-	for (let i = 0, len = array.length; i < len; i++) {
-		let item = array[i], prev = current && current[normalized.length], t;
-		if (item == null || item === true || item === false);
-		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
-		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") {
-			if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-		} else {
-			const value = String(item);
-			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
-			else normalized.push(document.createTextNode(value));
-		}
-	}
-	return dynamic;
-}
-function appendNodes(parent, array, marker = null) {
-	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
-}
-function cleanChildren(parent, current, marker, replacement) {
-	if (marker === void 0) return parent.textContent = "";
-	const node = replacement || document.createTextNode("");
-	if (current.length) {
-		let inserted = false;
-		for (let i = current.length - 1; i >= 0; i--) {
-			const el = current[i];
-			if (node !== el) {
-				const isParent = el.parentNode === parent;
-				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
-				else isParent && el.remove();
-			} else inserted = true;
-		}
-	} else parent.insertBefore(node, marker);
-	return [node];
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Counter with Memos</h3><p>Count: </p><p>Multiplier: </p><p>Doubled: </p><p>Quadrupled: </p><p>Expensive: </p><button>Increment</button><button>Increase Multiplier\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Filtered List with Memos</h3><div style=margin-bottom:1rem><input type=text placeholder=Search...><select style=margin-left:0.5rem><option value=all>All Categories</option><option value=fruit>Fruit</option><option value=vegetable>Vegetable</option><option value=grain>Grain</option></select><input type=number placeholder="Min Price"min=0 step=0.1 style=margin-left:0.5rem;width:100px></div><button>Add Random Item</button><p>Total items: </p><p>Total price: $</p><ul>\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<li> (<!>) - $\`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Computed Values</h3><div style=display:flex;gap:1rem;align-items:center><div><label>Base: </label><input type=range min=1 max=20></div><div><label>Exponent: </label><input type=range min=1 max=5></div></div><p>Raw power: </p><p>Formatted: </p><p>Is large: </p><p>Description: \`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div style=color:red;font-weight:bold>This is a large number!\`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<div><h2>createMemo Demo</h2><hr><hr>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Counter with Memos</h3><p>Count: </p><p>Multiplier: </p><p>Doubled: </p><p>Quadrupled: </p><p>Expensive: </p><button>Increment</button><button>Increase Multiplier\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Filtered List with Memos</h3><div style=margin-bottom:1rem><input type=text placeholder=Search...><select style=margin-left:0.5rem><option value=all>All Categories</option><option value=fruit>Fruit</option><option value=vegetable>Vegetable</option><option value=grain>Grain</option></select><input type=number placeholder="Min Price"min=0 step=0.1 style=margin-left:0.5rem;width:100px></div><button>Add Random Item</button><p>Total items: </p><p>Total price: $</p><ul>\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<li> (<!>) - $<!>\`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Computed Values</h3><div style=display:flex;gap:1rem;align-items:center><div><label>Base: </label><input type=range min=1 max=20></div><div><label>Exponent: </label><input type=range min=1 max=5></div></div><p>Raw power: </p><p>Formatted: </p><p>Is large: </p><p>Description: \`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div style=color:red;font-weight:bold>This is a large number!\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>createMemo Demo</h2><hr><hr><!>\`);
 const MemoCounter = () => {
 	const [count, setCount] = createSignal(0);
 	const [multiplier, setMultiplier] = createSignal(2);
@@ -680,27 +430,29 @@ const MemoCounter = () => {
 	createEffect(() => {
 		console.log("Doubled changed:", doubled());
 	});
-	return (() => {
-		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling;
-		_el$3.firstChild;
-		var _el$5 = _el$3.nextSibling;
-		_el$5.firstChild;
-		var _el$7 = _el$5.nextSibling;
-		_el$7.firstChild;
-		var _el$9 = _el$7.nextSibling;
-		_el$9.firstChild;
-		var _el$1 = _el$9.nextSibling;
-		_el$1.firstChild;
-		var _el$11 = _el$1.nextSibling, _el$12 = _el$11.nextSibling;
-		insert(_el$3, count, null);
-		insert(_el$5, multiplier, null);
-		insert(_el$7, doubled, null);
-		insert(_el$9, quadrupled, null);
-		insert(_el$1, () => expensiveValue().toFixed(3), null);
-		_el$11.$$click = () => setCount((c) => c + 1);
-		_el$12.$$click = () => setMultiplier((m) => m + 1);
-		return _el$;
-	})();
+	var _el$ = _tmpl$();
+	var _el$3 = _el$.firstChild.nextSibling;
+	_el$3.firstChild;
+	var _el$5 = _el$3.nextSibling;
+	_el$5.firstChild;
+	var _el$7 = _el$5.nextSibling;
+	_el$7.firstChild;
+	var _el$9 = _el$7.nextSibling;
+	_el$9.firstChild;
+	var _el$11 = _el$9.nextSibling;
+	_el$11.firstChild;
+	var _el$13 = _el$11.nextSibling;
+	var _el$14 = _el$13.nextSibling;
+	insert(_el$3, count, null);
+	insert(_el$5, multiplier, null);
+	insert(_el$7, doubled, null);
+	insert(_el$9, quadrupled, null);
+	insert(_el$11, () => {
+		return expensiveValue().toFixed(3);
+	}, null);
+	_el$13.$$click = () => setCount((c) => c + 1);
+	_el$14.$$click = () => setMultiplier((m) => m + 1);
+	return _el$;
 };
 const FilteredList = () => {
 	const [items, setItems] = createSignal([
@@ -762,28 +514,46 @@ const FilteredList = () => {
 			price: Math.random() * 5
 		}]);
 	};
-	return (() => {
-		var _el$13 = _tmpl$2(), _el$15 = _el$13.firstChild.nextSibling, _el$16 = _el$15.firstChild, _el$17 = _el$16.nextSibling, _el$18 = _el$17.nextSibling, _el$19 = _el$15.nextSibling, _el$20 = _el$19.nextSibling;
-		_el$20.firstChild;
-		var _el$22 = _el$20.nextSibling;
-		_el$22.firstChild;
-		var _el$24 = _el$22.nextSibling;
-		_el$16.$$input = (e) => setSearchTerm(e.currentTarget.value);
-		_el$17.addEventListener("change", (e) => setCategoryFilter(e.currentTarget.value));
-		_el$18.$$input = (e) => setMinPrice(Number(e.currentTarget.value));
-		_el$19.$$click = addItem;
-		insert(_el$20, () => filteredItems().length, null);
-		insert(_el$22, () => totalPrice().toFixed(2), null);
-		insert(_el$24, () => filteredItems().map((item) => (() => {
-			var _el$25 = _tmpl$3(), _el$26 = _el$25.firstChild, _el$28 = _el$26.nextSibling;
-			_el$28.nextSibling;
-			insert(_el$25, () => item.name, _el$26);
-			insert(_el$25, () => item.category, _el$28);
-			insert(_el$25, () => item.price.toFixed(2), null);
-			return _el$25;
-		})()));
-		return _el$13;
-	})();
+	var _el$15 = _tmpl$2();
+	var _el$17 = _el$15.firstChild.nextSibling;
+	var _el$18 = _el$17.firstChild;
+	var _el$19 = _el$18.nextSibling;
+	var _el$20 = _el$19.nextSibling;
+	var _el$21 = _el$17.nextSibling;
+	var _el$22 = _el$21.nextSibling;
+	_el$22.firstChild;
+	var _el$24 = _el$22.nextSibling;
+	_el$24.firstChild;
+	var _el$26 = _el$24.nextSibling;
+	_el$18.$$input = (e) => setSearchTerm(e.currentTarget.value);
+	_el$19.addEventListener("change", (e) => setCategoryFilter(e.currentTarget.value));
+	_el$20.$$input = (e) => setMinPrice(Number(e.currentTarget.value));
+	_el$21.$$click = addItem;
+	insert(_el$22, () => {
+		return filteredItems().length;
+	}, null);
+	insert(_el$24, () => {
+		return totalPrice().toFixed(2);
+	}, null);
+	insert(_el$26, () => {
+		return filteredItems().map((item) => (() => {
+			var _el$27 = _tmpl$3();
+			var _el$28 = _el$27.firstChild;
+			var _el$29 = _el$28.nextSibling;
+			var _el$31 = _el$29.nextSibling.nextSibling;
+			insert(_el$27, () => {
+				return item.name;
+			}, _el$28);
+			insert(_el$27, () => {
+				return item.category;
+			}, _el$29);
+			insert(_el$27, () => {
+				return item.price.toFixed(2);
+			}, _el$31);
+			return _el$27;
+		})());
+	});
+	return _el$15;
 };
 const ComputedValues = () => {
 	const [base, setBase] = createSignal(10);
@@ -798,44 +568,61 @@ const ComputedValues = () => {
 	const description = createMemo(() => {
 		return \`\${base()}^\${exponent()} = \${power()}\`;
 	});
-	return (() => {
-		var _el$29 = _tmpl$4(), _el$31 = _el$29.firstChild.nextSibling, _el$32 = _el$31.firstChild, _el$33 = _el$32.firstChild;
-		_el$33.firstChild;
-		var _el$35 = _el$33.nextSibling, _el$37 = _el$32.nextSibling.firstChild;
-		_el$37.firstChild;
-		var _el$39 = _el$37.nextSibling, _el$40 = _el$31.nextSibling;
-		_el$40.firstChild;
-		var _el$42 = _el$40.nextSibling;
-		_el$42.firstChild;
-		var _el$44 = _el$42.nextSibling;
-		_el$44.firstChild;
-		var _el$46 = _el$44.nextSibling;
-		_el$46.firstChild;
-		insert(_el$33, base, null);
-		_el$35.$$input = (e) => setBase(Number(e.currentTarget.value));
-		insert(_el$37, exponent, null);
-		_el$39.$$input = (e) => setExponent(Number(e.currentTarget.value));
-		insert(_el$40, power, null);
-		insert(_el$42, formattedPower, null);
-		insert(_el$44, () => isLargeNumber() ? "Yes" : "No", null);
-		insert(_el$46, description, null);
-		insert(_el$29, (() => {
-			var _c$ = memo(() => !!isLargeNumber());
-			return () => _c$() && _tmpl$5();
-		})(), null);
-		createRenderEffect(() => _el$35.value = base());
-		createRenderEffect(() => _el$39.value = exponent());
-		return _el$29;
-	})();
+	var _el$32 = _tmpl$4();
+	var _el$34 = _el$32.firstChild.nextSibling;
+	var _el$35 = _el$34.firstChild;
+	var _el$36 = _el$35.firstChild;
+	_el$36.firstChild;
+	var _el$38 = _el$36.nextSibling;
+	var _el$40 = _el$35.nextSibling.firstChild;
+	_el$40.firstChild;
+	var _el$42 = _el$40.nextSibling;
+	var _el$43 = _el$34.nextSibling;
+	_el$43.firstChild;
+	var _el$45 = _el$43.nextSibling;
+	_el$45.firstChild;
+	var _el$47 = _el$45.nextSibling;
+	_el$47.firstChild;
+	var _el$49 = _el$47.nextSibling;
+	_el$49.firstChild;
+	insert(_el$36, base, null);
+	_el$38.$$input = (e) => setBase(Number(e.currentTarget.value));
+	insert(_el$40, exponent, null);
+	_el$42.$$input = (e) => setExponent(Number(e.currentTarget.value));
+	insert(_el$43, power, null);
+	insert(_el$45, formattedPower, null);
+	insert(_el$47, () => {
+		return isLargeNumber() ? "Yes" : "No";
+	}, null);
+	insert(_el$49, description, null);
+	insert(_el$32, (() => {
+		var _c$ = memo(() => {
+			return !!isLargeNumber();
+		});
+		return () => {
+			return _c$() ? _tmpl$5() : isLargeNumber();
+		};
+	})(), null);
+	effect(() => {
+		return {
+			e: base(),
+			t: exponent()
+		};
+	}, ({ e, t }, _p$) => {
+		_el$38.value = e ?? "";
+		_el$42.value = t ?? "";
+	});
+	return _el$32;
 };
 const MemoDemo = () => {
-	return (() => {
-		var _el$49 = _tmpl$6(), _el$51 = _el$49.firstChild.nextSibling, _el$52 = _el$51.nextSibling;
-		insert(_el$49, createComponent(MemoCounter, {}), _el$51);
-		insert(_el$49, createComponent(FilteredList, {}), _el$52);
-		insert(_el$49, createComponent(ComputedValues, {}), null);
-		return _el$49;
-	})();
+	var _el$52 = _tmpl$6();
+	var _el$54 = _el$52.firstChild.nextSibling;
+	var _el$55 = _el$54.nextSibling;
+	var _el$56 = _el$55.nextSibling;
+	insert(_el$52, createComponent(MemoCounter, {}), _el$54);
+	insert(_el$52, createComponent(FilteredList, {}), _el$55);
+	insert(_el$52, createComponent(ComputedValues, {}), _el$56);
+	return _el$52;
 };
 delegateEvents(["click", "input"]);
 export { MemoDemo as default };
@@ -843,7 +630,8 @@ export { MemoDemo as default };
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with Memo 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, effect, insert, memo, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -895,9 +683,6 @@ function createSignal(value, options) {
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
-}
-function createRenderEffect(fn, value, options) {
-	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createEffect(fn, value, options) {
 	runEffects = runUserEffects;
@@ -1253,260 +1038,12 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
-const memo = (fn) => createMemo(() => fn());
-function reconcileArrays(parentNode, a, b) {
-	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
-	while (aStart < aEnd || bStart < bEnd) {
-		if (a[aStart] === b[bStart]) {
-			aStart++;
-			bStart++;
-			continue;
-		}
-		while (a[aEnd - 1] === b[bEnd - 1]) {
-			aEnd--;
-			bEnd--;
-		}
-		if (aEnd === aStart) {
-			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
-			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
-		} else if (bEnd === bStart) while (aStart < aEnd) {
-			if (!map || !map.has(a[aStart])) a[aStart].remove();
-			aStart++;
-		}
-		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
-			const node = a[--aEnd].nextSibling;
-			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
-			parentNode.insertBefore(b[--bEnd], node);
-			a[aEnd] = b[bEnd];
-		} else {
-			if (!map) {
-				map = /* @__PURE__ */ new Map();
-				let i = bStart;
-				while (i < bEnd) map.set(b[i], i++);
-			}
-			const index = map.get(a[aStart]);
-			if (index != null) {
-				if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-				} else aStart++;
-			} else a[aStart++].remove();
-		}
-	}
-}
-const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
-}
-function insertExpression(parent, value, current, marker, unwrapArray) {
-	const hydrating = isHydrating(parent);
-	if (hydrating) {
-		!current && (current = [...parent.childNodes]);
-		let cleaned = [];
-		for (let i = 0; i < current.length; i++) {
-			const node = current[i];
-			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
-			else cleaned.push(node);
-		}
-		current = cleaned;
-	}
-	while (typeof current === "function") current = current();
-	if (value === current) return current;
-	const t = typeof value, multi = marker !== void 0;
-	parent = multi && current[0] && current[0].parentNode || parent;
-	if (t === "string" || t === "number") {
-		if (hydrating) return current;
-		if (t === "number") {
-			value = value.toString();
-			if (value === current) return current;
-		}
-		if (multi) {
-			let node = current[0];
-			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
-			else node = document.createTextNode(value);
-			current = cleanChildren(parent, current, marker, node);
-		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
-		else current = parent.textContent = value;
-	} else if (value == null || t === "boolean") {
-		if (hydrating) return current;
-		current = cleanChildren(parent, current, marker);
-	} else if (t === "function") {
-		createRenderEffect(() => {
-			let v = value();
-			while (typeof v === "function") v = v();
-			current = insertExpression(parent, v, current, marker);
-		});
-		return () => current;
-	} else if (Array.isArray(value)) {
-		const array = [];
-		const currentArray = current && Array.isArray(current);
-		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
-			return () => current;
-		}
-		if (hydrating) {
-			if (!array.length) return current;
-			if (marker === void 0) return current = [...parent.childNodes];
-			let node = array[0];
-			if (node.parentNode !== parent) return current;
-			const nodes = [node];
-			while ((node = node.nextSibling) !== marker) nodes.push(node);
-			return current = nodes;
-		}
-		if (array.length === 0) {
-			current = cleanChildren(parent, current, marker);
-			if (multi) return current;
-		} else if (currentArray) {
-			if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-		} else {
-			current && cleanChildren(parent);
-			appendNodes(parent, array);
-		}
-		current = array;
-	} else if (value.nodeType) {
-		if (hydrating && value.parentNode) return current = multi ? [value] : value;
-		if (Array.isArray(current)) {
-			if (multi) return current = cleanChildren(parent, current, marker, value);
-			cleanChildren(parent, current, null, value);
-		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
-		else parent.replaceChild(value, parent.firstChild);
-		current = value;
-	}
-	return current;
-}
-function normalizeIncomingArray(normalized, array, current, unwrap) {
-	let dynamic = false;
-	for (let i = 0, len = array.length; i < len; i++) {
-		let item = array[i], prev = current && current[normalized.length], t;
-		if (item == null || item === true || item === false);
-		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
-		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") {
-			if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-		} else {
-			const value = String(item);
-			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
-			else normalized.push(document.createTextNode(value));
-		}
-	}
-	return dynamic;
-}
-function appendNodes(parent, array, marker = null) {
-	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
-}
-function cleanChildren(parent, current, marker, replacement) {
-	if (marker === void 0) return parent.textContent = "";
-	const node = replacement || document.createTextNode("");
-	if (current.length) {
-		let inserted = false;
-		for (let i = current.length - 1; i >= 0; i--) {
-			const el = current[i];
-			if (node !== el) {
-				const isParent = el.parentNode === parent;
-				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
-				else isParent && el.remove();
-			} else inserted = true;
-		}
-	} else parent.insertBefore(node, marker);
-	return [node];
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Counter with Memos</h3><p>Count: </p><p>Multiplier: </p><p>Doubled: </p><p>Quadrupled: </p><p>Expensive: </p><button>Increment</button><button>Increase Multiplier\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Filtered List with Memos</h3><div style=margin-bottom:1rem><input type=text placeholder=Search...><select style=margin-left:0.5rem><option value=all>All Categories</option><option value=fruit>Fruit</option><option value=vegetable>Vegetable</option><option value=grain>Grain</option></select><input type=number placeholder="Min Price"min=0 step=0.1 style=margin-left:0.5rem;width:100px></div><button>Add Random Item</button><p>Total items: </p><p>Total price: $</p><ul>\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<li> (<!>) - $\`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Computed Values</h3><div style=display:flex;gap:1rem;align-items:center><div><label>Base: </label><input type=range min=1 max=20></div><div><label>Exponent: </label><input type=range min=1 max=5></div></div><p>Raw power: </p><p>Formatted: </p><p>Is large: </p><p>Description: \`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div style=color:red;font-weight:bold>This is a large number!\`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<div><h2>createMemo Demo</h2><hr><hr>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Counter with Memos</h3><p>Count: </p><p>Multiplier: </p><p>Doubled: </p><p>Quadrupled: </p><p>Expensive: </p><button>Increment</button><button>Increase Multiplier\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Filtered List with Memos</h3><div style=margin-bottom:1rem><input type=text placeholder=Search...><select style=margin-left:0.5rem><option value=all>All Categories</option><option value=fruit>Fruit</option><option value=vegetable>Vegetable</option><option value=grain>Grain</option></select><input type=number placeholder="Min Price"min=0 step=0.1 style=margin-left:0.5rem;width:100px></div><button>Add Random Item</button><p>Total items: </p><p>Total price: $</p><ul>\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<li> (<!>) - $<!>\`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Computed Values</h3><div style=display:flex;gap:1rem;align-items:center><div><label>Base: </label><input type=range min=1 max=20></div><div><label>Exponent: </label><input type=range min=1 max=5></div></div><p>Raw power: </p><p>Formatted: </p><p>Is large: </p><p>Description: \`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div style=color:red;font-weight:bold>This is a large number!\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>createMemo Demo</h2><hr><hr><!>\`);
 const MemoCounter = () => {
 	const [count, setCount] = createSignal(0);
 	const [multiplier, setMultiplier] = createSignal(2);
@@ -1522,27 +1059,29 @@ const MemoCounter = () => {
 	createEffect(() => {
 		console.log("Doubled changed:", doubled());
 	});
-	return (() => {
-		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling;
-		_el$3.firstChild;
-		var _el$5 = _el$3.nextSibling;
-		_el$5.firstChild;
-		var _el$7 = _el$5.nextSibling;
-		_el$7.firstChild;
-		var _el$9 = _el$7.nextSibling;
-		_el$9.firstChild;
-		var _el$1 = _el$9.nextSibling;
-		_el$1.firstChild;
-		var _el$11 = _el$1.nextSibling, _el$12 = _el$11.nextSibling;
-		insert(_el$3, count, null);
-		insert(_el$5, multiplier, null);
-		insert(_el$7, doubled, null);
-		insert(_el$9, quadrupled, null);
-		insert(_el$1, () => expensiveValue().toFixed(3), null);
-		_el$11.$$click = () => setCount((c) => c + 1);
-		_el$12.$$click = () => setMultiplier((m) => m + 1);
-		return _el$;
-	})();
+	var _el$ = _tmpl$();
+	var _el$3 = _el$.firstChild.nextSibling;
+	_el$3.firstChild;
+	var _el$5 = _el$3.nextSibling;
+	_el$5.firstChild;
+	var _el$7 = _el$5.nextSibling;
+	_el$7.firstChild;
+	var _el$9 = _el$7.nextSibling;
+	_el$9.firstChild;
+	var _el$11 = _el$9.nextSibling;
+	_el$11.firstChild;
+	var _el$13 = _el$11.nextSibling;
+	var _el$14 = _el$13.nextSibling;
+	insert(_el$3, count, null);
+	insert(_el$5, multiplier, null);
+	insert(_el$7, doubled, null);
+	insert(_el$9, quadrupled, null);
+	insert(_el$11, () => {
+		return expensiveValue().toFixed(3);
+	}, null);
+	_el$13.$$click = () => setCount((c) => c + 1);
+	_el$14.$$click = () => setMultiplier((m) => m + 1);
+	return _el$;
 };
 const FilteredList = () => {
 	const [items, setItems] = createSignal([
@@ -1604,28 +1143,46 @@ const FilteredList = () => {
 			price: Math.random() * 5
 		}]);
 	};
-	return (() => {
-		var _el$13 = _tmpl$2(), _el$15 = _el$13.firstChild.nextSibling, _el$16 = _el$15.firstChild, _el$17 = _el$16.nextSibling, _el$18 = _el$17.nextSibling, _el$19 = _el$15.nextSibling, _el$20 = _el$19.nextSibling;
-		_el$20.firstChild;
-		var _el$22 = _el$20.nextSibling;
-		_el$22.firstChild;
-		var _el$24 = _el$22.nextSibling;
-		_el$16.$$input = (e) => setSearchTerm(e.currentTarget.value);
-		_el$17.addEventListener("change", (e) => setCategoryFilter(e.currentTarget.value));
-		_el$18.$$input = (e) => setMinPrice(Number(e.currentTarget.value));
-		_el$19.$$click = addItem;
-		insert(_el$20, () => filteredItems().length, null);
-		insert(_el$22, () => totalPrice().toFixed(2), null);
-		insert(_el$24, () => filteredItems().map((item) => (() => {
-			var _el$25 = _tmpl$3(), _el$26 = _el$25.firstChild, _el$28 = _el$26.nextSibling;
-			_el$28.nextSibling;
-			insert(_el$25, () => item.name, _el$26);
-			insert(_el$25, () => item.category, _el$28);
-			insert(_el$25, () => item.price.toFixed(2), null);
-			return _el$25;
-		})()));
-		return _el$13;
-	})();
+	var _el$15 = _tmpl$2();
+	var _el$17 = _el$15.firstChild.nextSibling;
+	var _el$18 = _el$17.firstChild;
+	var _el$19 = _el$18.nextSibling;
+	var _el$20 = _el$19.nextSibling;
+	var _el$21 = _el$17.nextSibling;
+	var _el$22 = _el$21.nextSibling;
+	_el$22.firstChild;
+	var _el$24 = _el$22.nextSibling;
+	_el$24.firstChild;
+	var _el$26 = _el$24.nextSibling;
+	_el$18.$$input = (e) => setSearchTerm(e.currentTarget.value);
+	_el$19.addEventListener("change", (e) => setCategoryFilter(e.currentTarget.value));
+	_el$20.$$input = (e) => setMinPrice(Number(e.currentTarget.value));
+	_el$21.$$click = addItem;
+	insert(_el$22, () => {
+		return filteredItems().length;
+	}, null);
+	insert(_el$24, () => {
+		return totalPrice().toFixed(2);
+	}, null);
+	insert(_el$26, () => {
+		return filteredItems().map((item) => (() => {
+			var _el$27 = _tmpl$3();
+			var _el$28 = _el$27.firstChild;
+			var _el$29 = _el$28.nextSibling;
+			var _el$31 = _el$29.nextSibling.nextSibling;
+			insert(_el$27, () => {
+				return item.name;
+			}, _el$28);
+			insert(_el$27, () => {
+				return item.category;
+			}, _el$29);
+			insert(_el$27, () => {
+				return item.price.toFixed(2);
+			}, _el$31);
+			return _el$27;
+		})());
+	});
+	return _el$15;
 };
 const ComputedValues = () => {
 	const [base, setBase] = createSignal(10);
@@ -1640,44 +1197,61 @@ const ComputedValues = () => {
 	const description = createMemo(() => {
 		return \`\${base()}^\${exponent()} = \${power()}\`;
 	});
-	return (() => {
-		var _el$29 = _tmpl$4(), _el$31 = _el$29.firstChild.nextSibling, _el$32 = _el$31.firstChild, _el$33 = _el$32.firstChild;
-		_el$33.firstChild;
-		var _el$35 = _el$33.nextSibling, _el$37 = _el$32.nextSibling.firstChild;
-		_el$37.firstChild;
-		var _el$39 = _el$37.nextSibling, _el$40 = _el$31.nextSibling;
-		_el$40.firstChild;
-		var _el$42 = _el$40.nextSibling;
-		_el$42.firstChild;
-		var _el$44 = _el$42.nextSibling;
-		_el$44.firstChild;
-		var _el$46 = _el$44.nextSibling;
-		_el$46.firstChild;
-		insert(_el$33, base, null);
-		_el$35.$$input = (e) => setBase(Number(e.currentTarget.value));
-		insert(_el$37, exponent, null);
-		_el$39.$$input = (e) => setExponent(Number(e.currentTarget.value));
-		insert(_el$40, power, null);
-		insert(_el$42, formattedPower, null);
-		insert(_el$44, () => isLargeNumber() ? "Yes" : "No", null);
-		insert(_el$46, description, null);
-		insert(_el$29, (() => {
-			var _c$ = memo(() => !!isLargeNumber());
-			return () => _c$() && _tmpl$5();
-		})(), null);
-		createRenderEffect(() => _el$35.value = base());
-		createRenderEffect(() => _el$39.value = exponent());
-		return _el$29;
-	})();
+	var _el$32 = _tmpl$4();
+	var _el$34 = _el$32.firstChild.nextSibling;
+	var _el$35 = _el$34.firstChild;
+	var _el$36 = _el$35.firstChild;
+	_el$36.firstChild;
+	var _el$38 = _el$36.nextSibling;
+	var _el$40 = _el$35.nextSibling.firstChild;
+	_el$40.firstChild;
+	var _el$42 = _el$40.nextSibling;
+	var _el$43 = _el$34.nextSibling;
+	_el$43.firstChild;
+	var _el$45 = _el$43.nextSibling;
+	_el$45.firstChild;
+	var _el$47 = _el$45.nextSibling;
+	_el$47.firstChild;
+	var _el$49 = _el$47.nextSibling;
+	_el$49.firstChild;
+	insert(_el$36, base, null);
+	_el$38.$$input = (e) => setBase(Number(e.currentTarget.value));
+	insert(_el$40, exponent, null);
+	_el$42.$$input = (e) => setExponent(Number(e.currentTarget.value));
+	insert(_el$43, power, null);
+	insert(_el$45, formattedPower, null);
+	insert(_el$47, () => {
+		return isLargeNumber() ? "Yes" : "No";
+	}, null);
+	insert(_el$49, description, null);
+	insert(_el$32, (() => {
+		var _c$ = memo(() => {
+			return !!isLargeNumber();
+		});
+		return () => {
+			return _c$() ? _tmpl$5() : isLargeNumber();
+		};
+	})(), null);
+	effect(() => {
+		return {
+			e: base(),
+			t: exponent()
+		};
+	}, ({ e, t }, _p$) => {
+		_el$38.value = e ?? "";
+		_el$42.value = t ?? "";
+	});
+	return _el$32;
 };
 const MemoDemo = () => {
-	return (() => {
-		var _el$49 = _tmpl$6(), _el$51 = _el$49.firstChild.nextSibling, _el$52 = _el$51.nextSibling;
-		insert(_el$49, createComponent(MemoCounter, {}), _el$51);
-		insert(_el$49, createComponent(FilteredList, {}), _el$52);
-		insert(_el$49, createComponent(ComputedValues, {}), null);
-		return _el$49;
-	})();
+	var _el$52 = _tmpl$6();
+	var _el$54 = _el$52.firstChild.nextSibling;
+	var _el$55 = _el$54.nextSibling;
+	var _el$56 = _el$55.nextSibling;
+	insert(_el$52, createComponent(MemoCounter, {}), _el$54);
+	insert(_el$52, createComponent(FilteredList, {}), _el$55);
+	insert(_el$52, createComponent(ComputedValues, {}), _el$56);
+	return _el$52;
 };
 delegateEvents(["click", "input"]);
 export { MemoDemo as default };

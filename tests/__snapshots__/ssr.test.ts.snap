@@ -1,7 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform SSR component 1`] = `
-"const ERROR = Symbol("error");
+"import { escape, memo, ssr, ssrAttribute, ssrClassName } from "@solidjs/web";
+const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -1446,7 +1447,6 @@ function Ba(e, r, t, n, a) {
 	if (s & 16) switch (a) {
 		case BigInt64Array:
 		case BigUint64Array: return Ra(e, r, t, n);
-		default: break;
 	}
 	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n instanceof AggregateError)) return xa(e, r, t, n);
 	if (n instanceof Error) return fn(e, r, t, n);
@@ -2164,7 +2164,7 @@ function renderToString(code, options = {}) {
 	};
 	let html = createRoot((d) => {
 		setTimeout(d);
-		return resolveSSRNode(escape(code()));
+		return resolveSSRNode(escape$1(code()));
 	});
 	sharedConfig.context.noHydrate = true;
 	serializer.close();
@@ -2172,34 +2172,19 @@ function renderToString(code, options = {}) {
 	if (scripts.length) html = injectScripts(html, scripts, options.nonce);
 	return html;
 }
-function ssr(t, ...nodes) {
-	if (nodes.length) {
-		let result = "";
-		for (let i = 0; i < nodes.length; i++) {
-			result += t[i];
-			const node = nodes[i];
-			if (node !== void 0) result += resolveSSRNode(node);
-		}
-		t = result + t[nodes.length];
-	}
-	return { t };
-}
-function ssrAttribute(key, value, isBoolean) {
-	return isBoolean ? value ? " " + key : "" : value != null ? \` \${key}="\${value}"\` : "";
-}
-function escape(s, attr) {
+function escape$1(s, attr) {
 	const t = typeof s;
 	if (t !== "string") {
-		if (!attr && t === "function") return escape(s());
+		if (!attr && t === "function") return escape$1(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
+			for (let i = 0; i < s.length; i++) s[i] = escape$1(s[i]);
 			return s;
 		}
 		if (attr) {
 			if (t === "boolean") return String(s);
 			if (s == null || t === "number") return s;
-			return escape(String(s), attr);
+			return escape$1(String(s), attr);
 		}
 		return s;
 	}
@@ -2267,8 +2252,8 @@ function injectScripts(html, scripts, nonce) {
 }
 var _tmpl$ = [
 	"<div><script>console.log('test')<\\/script><style>body { margin: 0; }</style><div data-custom-element=\\"true\\" data-test=\\"value\\"><span>Nested content</span></div>",
-	"<div",
-	">Dynamic class</div></div>"
+	"<div class=\\"",
+	"\\">Dynamic class</div></div>"
 ];
 var _tmpl$2 = "<div>Conditional content</div>";
 var _tmpl$3 = ["<table><thead><tr><th>ID</th><th>Value</th></tr></thead><tbody>", "</tbody></table>"];
@@ -2281,18 +2266,38 @@ var _tmpl$4 = [
 var _tmpl$5 = ["<button type=\\"button\\">", "</button>"];
 function TestSSRSpecialElements() {
 	const [show] = createSignal(true);
-	return ssr(_tmpl$, show() && _tmpl$2, ssrAttribute("class", show() ? "active" : "inactive", false));
+	var _v$ = (() => {
+		var _c$ = memo(() => {
+			return !!show();
+		});
+		return () => {
+			return _c$() ? _tmpl$2 : escape(show());
+		};
+	})(), _v$2 = () => {
+		return ssrClassName(show() ? "active" : "inactive");
+	};
+	return ssr(_tmpl$, _v$, _v$2);
 }
 function TestSSRComplexStructure() {
-	return ssr(_tmpl$3, escape([
+	const items = [
 		1,
 		2,
 		3
-	].map((item) => ssr(_tmpl$4, ssrAttribute("data-key", escape(item, true), false), escape(item), escape(item)))));
+	];
+	var _v$3 = () => {
+		return escape(items.map((item) => {
+			var _v$4 = escape(item), _v$5 = escape(item);
+			return ssr(_tmpl$4, ssrAttribute("data-key", escape(item, true)), _v$4, _v$5);
+		}));
+	};
+	return ssr(_tmpl$3, _v$3);
 }
 const App = () => {
 	const [count, setCount] = createSignal(0);
-	return ssr(_tmpl$5, escape(count()));
+	var _v$6 = () => {
+		return escape(count());
+	};
+	return ssr(_tmpl$5, _v$6);
 };
 var ssr_default = renderToString(App);
 export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
@@ -2300,7 +2305,8 @@ export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default
 `;
 
 exports[`rolldown-plugin-solid dist should transform SSR component 1`] = `
-"const ERROR = Symbol("error");
+"import { escape, memo, ssr, ssrAttribute, ssrClassName } from "@solidjs/web";
+const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -3745,7 +3751,6 @@ function Ba(e, r, t, n, a) {
 	if (s & 16) switch (a) {
 		case BigInt64Array:
 		case BigUint64Array: return Ra(e, r, t, n);
-		default: break;
 	}
 	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n instanceof AggregateError)) return xa(e, r, t, n);
 	if (n instanceof Error) return fn(e, r, t, n);
@@ -4463,7 +4468,7 @@ function renderToString(code, options = {}) {
 	};
 	let html = createRoot((d) => {
 		setTimeout(d);
-		return resolveSSRNode(escape(code()));
+		return resolveSSRNode(escape$1(code()));
 	});
 	sharedConfig.context.noHydrate = true;
 	serializer.close();
@@ -4471,34 +4476,19 @@ function renderToString(code, options = {}) {
 	if (scripts.length) html = injectScripts(html, scripts, options.nonce);
 	return html;
 }
-function ssr(t, ...nodes) {
-	if (nodes.length) {
-		let result = "";
-		for (let i = 0; i < nodes.length; i++) {
-			result += t[i];
-			const node = nodes[i];
-			if (node !== void 0) result += resolveSSRNode(node);
-		}
-		t = result + t[nodes.length];
-	}
-	return { t };
-}
-function ssrAttribute(key, value, isBoolean) {
-	return isBoolean ? value ? " " + key : "" : value != null ? \` \${key}="\${value}"\` : "";
-}
-function escape(s, attr) {
+function escape$1(s, attr) {
 	const t = typeof s;
 	if (t !== "string") {
-		if (!attr && t === "function") return escape(s());
+		if (!attr && t === "function") return escape$1(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
+			for (let i = 0; i < s.length; i++) s[i] = escape$1(s[i]);
 			return s;
 		}
 		if (attr) {
 			if (t === "boolean") return String(s);
 			if (s == null || t === "number") return s;
-			return escape(String(s), attr);
+			return escape$1(String(s), attr);
 		}
 		return s;
 	}
@@ -4566,8 +4556,8 @@ function injectScripts(html, scripts, nonce) {
 }
 var _tmpl$ = [
 	"<div><script>console.log('test')<\\/script><style>body { margin: 0; }</style><div data-custom-element=\\"true\\" data-test=\\"value\\"><span>Nested content</span></div>",
-	"<div",
-	">Dynamic class</div></div>"
+	"<div class=\\"",
+	"\\">Dynamic class</div></div>"
 ];
 var _tmpl$2 = "<div>Conditional content</div>";
 var _tmpl$3 = ["<table><thead><tr><th>ID</th><th>Value</th></tr></thead><tbody>", "</tbody></table>"];
@@ -4580,18 +4570,38 @@ var _tmpl$4 = [
 var _tmpl$5 = ["<button type=\\"button\\">", "</button>"];
 function TestSSRSpecialElements() {
 	const [show] = createSignal(true);
-	return ssr(_tmpl$, show() && _tmpl$2, ssrAttribute("class", show() ? "active" : "inactive", false));
+	var _v$ = (() => {
+		var _c$ = memo(() => {
+			return !!show();
+		});
+		return () => {
+			return _c$() ? _tmpl$2 : escape(show());
+		};
+	})(), _v$2 = () => {
+		return ssrClassName(show() ? "active" : "inactive");
+	};
+	return ssr(_tmpl$, _v$, _v$2);
 }
 function TestSSRComplexStructure() {
-	return ssr(_tmpl$3, escape([
+	const items = [
 		1,
 		2,
 		3
-	].map((item) => ssr(_tmpl$4, ssrAttribute("data-key", escape(item, true), false), escape(item), escape(item)))));
+	];
+	var _v$3 = () => {
+		return escape(items.map((item) => {
+			var _v$4 = escape(item), _v$5 = escape(item);
+			return ssr(_tmpl$4, ssrAttribute("data-key", escape(item, true)), _v$4, _v$5);
+		}));
+	};
+	return ssr(_tmpl$3, _v$3);
 }
 const App = () => {
 	const [count, setCount] = createSignal(0);
-	return ssr(_tmpl$5, escape(count()));
+	var _v$6 = () => {
+		return escape(count());
+	};
+	return ssr(_tmpl$5, _v$6);
 };
 var ssr_default = renderToString(App);
 export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
@@ -4599,7 +4609,8 @@ export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default
 `;
 
 exports[`rolldown-plugin-solid src should transform SSR with hydratable option 1`] = `
-"const ERROR = Symbol("error");
+"import { escape, memo, scope, ssr, ssrAttribute, ssrClassName, ssrHydrationKey } from "@solidjs/web";
+const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -6044,7 +6055,6 @@ function Ba(e, r, t, n, a) {
 	if (s & 16) switch (a) {
 		case BigInt64Array:
 		case BigUint64Array: return Ra(e, r, t, n);
-		default: break;
 	}
 	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n instanceof AggregateError)) return xa(e, r, t, n);
 	if (n instanceof Error) return fn(e, r, t, n);
@@ -6762,7 +6772,7 @@ function renderToString(code, options = {}) {
 	};
 	let html = createRoot((d) => {
 		setTimeout(d);
-		return resolveSSRNode(escape(code()));
+		return resolveSSRNode(escape$1(code()));
 	});
 	sharedConfig.context.noHydrate = true;
 	serializer.close();
@@ -6770,38 +6780,19 @@ function renderToString(code, options = {}) {
 	if (scripts.length) html = injectScripts(html, scripts, options.nonce);
 	return html;
 }
-function ssr(t, ...nodes) {
-	if (nodes.length) {
-		let result = "";
-		for (let i = 0; i < nodes.length; i++) {
-			result += t[i];
-			const node = nodes[i];
-			if (node !== void 0) result += resolveSSRNode(node);
-		}
-		t = result + t[nodes.length];
-	}
-	return { t };
-}
-function ssrAttribute(key, value, isBoolean) {
-	return isBoolean ? value ? " " + key : "" : value != null ? \` \${key}="\${value}"\` : "";
-}
-function ssrHydrationKey() {
-	const hk = getHydrationKey();
-	return hk ? \` data-hk="\${hk}"\` : "";
-}
-function escape(s, attr) {
+function escape$1(s, attr) {
 	const t = typeof s;
 	if (t !== "string") {
-		if (!attr && t === "function") return escape(s());
+		if (!attr && t === "function") return escape$1(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
+			for (let i = 0; i < s.length; i++) s[i] = escape$1(s[i]);
 			return s;
 		}
 		if (attr) {
 			if (t === "boolean") return String(s);
 			if (s == null || t === "number") return s;
-			return escape(String(s), attr);
+			return escape$1(String(s), attr);
 		}
 		return s;
 	}
@@ -6853,10 +6844,6 @@ function resolveSSRNode(node, top) {
 	if (t === "function") return resolveSSRNode(node());
 	return String(node);
 }
-function getHydrationKey() {
-	const hydrate = sharedConfig.context;
-	return hydrate && !hydrate.noHydrate && sharedConfig.getNextContextId();
-}
 function injectAssets(assets, html) {
 	if (!assets || !assets.length) return html;
 	let out = "";
@@ -6874,8 +6861,8 @@ function injectScripts(html, scripts, nonce) {
 var _tmpl$ = [
 	"<div",
 	"><script>console.log('test')<\\/script><style>body { margin: 0; }</style><div data-custom-element=\\"true\\" data-test=\\"value\\"><span>Nested content</span></div><!--$-->",
-	"<!--/--><div",
-	">Dynamic class</div></div>"
+	"<!--/--><div class=\\"",
+	"\\">Dynamic class</div></div>"
 ];
 var _tmpl$2 = ["<div", ">Conditional content</div>"];
 var _tmpl$3 = [
@@ -6885,6 +6872,7 @@ var _tmpl$3 = [
 ];
 var _tmpl$4 = [
 	"<tr",
+	"",
 	"><td>",
 	"</td><td>Value <!--$-->",
 	"<!--/--></td></tr>"
@@ -6896,18 +6884,39 @@ var _tmpl$5 = [
 ];
 function TestSSRSpecialElements() {
 	const [show] = createSignal(true);
-	return ssr(_tmpl$, ssrHydrationKey(), show() && _tmpl$2[0] + ssrHydrationKey() + _tmpl$2[1], ssrAttribute("class", show() ? "active" : "inactive", false));
+	var _v$ = ssrHydrationKey(), _v$2 = scope((() => {
+		var _c$ = memo(() => {
+			return !!show();
+		});
+		return () => {
+			var _v$4;
+			return _c$() ? (_v$4 = ssrHydrationKey(), ssr(_tmpl$2, _v$4)) : escape(show());
+		};
+	})()), _v$3 = () => {
+		return ssrClassName(show() ? "active" : "inactive");
+	};
+	return ssr(_tmpl$, _v$, _v$2, _v$3);
 }
 function TestSSRComplexStructure() {
-	return ssr(_tmpl$3, ssrHydrationKey(), escape([
+	const items = [
 		1,
 		2,
 		3
-	].map((item) => ssr(_tmpl$4, ssrHydrationKey() + ssrAttribute("data-key", escape(item, true), false), escape(item), escape(item)))));
+	];
+	var _v$5 = ssrHydrationKey(), _v$6 = scope(() => {
+		return escape(items.map((item) => {
+			var _v$7 = ssrHydrationKey(), _v$8 = escape(item), _v$9 = escape(item);
+			return ssr(_tmpl$4, _v$7, ssrAttribute("data-key", escape(item, true)), _v$8, _v$9);
+		}));
+	});
+	return ssr(_tmpl$3, _v$5, _v$6);
 }
 const App = () => {
 	const [count, setCount] = createSignal(0);
-	return ssr(_tmpl$5, ssrHydrationKey(), escape(count()));
+	var _v$10 = ssrHydrationKey(), _v$11 = scope(() => {
+		return escape(count());
+	});
+	return ssr(_tmpl$5, _v$10, _v$11);
 };
 var ssr_default = renderToString(App);
 export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
@@ -6915,7 +6924,8 @@ export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default
 `;
 
 exports[`rolldown-plugin-solid dist should transform SSR with hydratable option 1`] = `
-"const ERROR = Symbol("error");
+"import { escape, memo, scope, ssr, ssrAttribute, ssrClassName, ssrHydrationKey } from "@solidjs/web";
+const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -8360,7 +8370,6 @@ function Ba(e, r, t, n, a) {
 	if (s & 16) switch (a) {
 		case BigInt64Array:
 		case BigUint64Array: return Ra(e, r, t, n);
-		default: break;
 	}
 	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n instanceof AggregateError)) return xa(e, r, t, n);
 	if (n instanceof Error) return fn(e, r, t, n);
@@ -9078,7 +9087,7 @@ function renderToString(code, options = {}) {
 	};
 	let html = createRoot((d) => {
 		setTimeout(d);
-		return resolveSSRNode(escape(code()));
+		return resolveSSRNode(escape$1(code()));
 	});
 	sharedConfig.context.noHydrate = true;
 	serializer.close();
@@ -9086,38 +9095,19 @@ function renderToString(code, options = {}) {
 	if (scripts.length) html = injectScripts(html, scripts, options.nonce);
 	return html;
 }
-function ssr(t, ...nodes) {
-	if (nodes.length) {
-		let result = "";
-		for (let i = 0; i < nodes.length; i++) {
-			result += t[i];
-			const node = nodes[i];
-			if (node !== void 0) result += resolveSSRNode(node);
-		}
-		t = result + t[nodes.length];
-	}
-	return { t };
-}
-function ssrAttribute(key, value, isBoolean) {
-	return isBoolean ? value ? " " + key : "" : value != null ? \` \${key}="\${value}"\` : "";
-}
-function ssrHydrationKey() {
-	const hk = getHydrationKey();
-	return hk ? \` data-hk="\${hk}"\` : "";
-}
-function escape(s, attr) {
+function escape$1(s, attr) {
 	const t = typeof s;
 	if (t !== "string") {
-		if (!attr && t === "function") return escape(s());
+		if (!attr && t === "function") return escape$1(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
+			for (let i = 0; i < s.length; i++) s[i] = escape$1(s[i]);
 			return s;
 		}
 		if (attr) {
 			if (t === "boolean") return String(s);
 			if (s == null || t === "number") return s;
-			return escape(String(s), attr);
+			return escape$1(String(s), attr);
 		}
 		return s;
 	}
@@ -9169,10 +9159,6 @@ function resolveSSRNode(node, top) {
 	if (t === "function") return resolveSSRNode(node());
 	return String(node);
 }
-function getHydrationKey() {
-	const hydrate = sharedConfig.context;
-	return hydrate && !hydrate.noHydrate && sharedConfig.getNextContextId();
-}
 function injectAssets(assets, html) {
 	if (!assets || !assets.length) return html;
 	let out = "";
@@ -9190,8 +9176,8 @@ function injectScripts(html, scripts, nonce) {
 var _tmpl$ = [
 	"<div",
 	"><script>console.log('test')<\\/script><style>body { margin: 0; }</style><div data-custom-element=\\"true\\" data-test=\\"value\\"><span>Nested content</span></div><!--$-->",
-	"<!--/--><div",
-	">Dynamic class</div></div>"
+	"<!--/--><div class=\\"",
+	"\\">Dynamic class</div></div>"
 ];
 var _tmpl$2 = ["<div", ">Conditional content</div>"];
 var _tmpl$3 = [
@@ -9201,6 +9187,7 @@ var _tmpl$3 = [
 ];
 var _tmpl$4 = [
 	"<tr",
+	"",
 	"><td>",
 	"</td><td>Value <!--$-->",
 	"<!--/--></td></tr>"
@@ -9212,18 +9199,39 @@ var _tmpl$5 = [
 ];
 function TestSSRSpecialElements() {
 	const [show] = createSignal(true);
-	return ssr(_tmpl$, ssrHydrationKey(), show() && _tmpl$2[0] + ssrHydrationKey() + _tmpl$2[1], ssrAttribute("class", show() ? "active" : "inactive", false));
+	var _v$ = ssrHydrationKey(), _v$2 = scope((() => {
+		var _c$ = memo(() => {
+			return !!show();
+		});
+		return () => {
+			var _v$4;
+			return _c$() ? (_v$4 = ssrHydrationKey(), ssr(_tmpl$2, _v$4)) : escape(show());
+		};
+	})()), _v$3 = () => {
+		return ssrClassName(show() ? "active" : "inactive");
+	};
+	return ssr(_tmpl$, _v$, _v$2, _v$3);
 }
 function TestSSRComplexStructure() {
-	return ssr(_tmpl$3, ssrHydrationKey(), escape([
+	const items = [
 		1,
 		2,
 		3
-	].map((item) => ssr(_tmpl$4, ssrHydrationKey() + ssrAttribute("data-key", escape(item, true), false), escape(item), escape(item)))));
+	];
+	var _v$5 = ssrHydrationKey(), _v$6 = scope(() => {
+		return escape(items.map((item) => {
+			var _v$7 = ssrHydrationKey(), _v$8 = escape(item), _v$9 = escape(item);
+			return ssr(_tmpl$4, _v$7, ssrAttribute("data-key", escape(item, true)), _v$8, _v$9);
+		}));
+	});
+	return ssr(_tmpl$3, _v$5, _v$6);
 }
 const App = () => {
 	const [count, setCount] = createSignal(0);
-	return ssr(_tmpl$5, ssrHydrationKey(), escape(count()));
+	var _v$10 = ssrHydrationKey(), _v$11 = scope(() => {
+		return escape(count());
+	});
+	return ssr(_tmpl$5, _v$10, _v$11);
 };
 var ssr_default = renderToString(App);
 export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };

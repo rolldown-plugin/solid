@@ -1,57 +1,12 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform hydratable html/head/body elements 1`] = `
-"const sharedConfig = {
-	context: void 0,
-	registry: void 0,
-	effects: void 0,
-	done: false,
-	getContextId() {
-		return getContextId(this.context.count);
-	},
-	getNextContextId() {
-		return getContextId(this.context.count++);
-	}
-};
-function getContextId(count) {
-	const num = String(count), len = num.length - 1;
-	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
-}
-let Listener = null;
-function untrack(fn) {
-	if (Listener === null) return fn();
-	const listener = Listener;
-	Listener = null;
-	try {
-		return fn();
-	} finally {
-		Listener = listener;
-	}
-}
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
-function getNextElement(template) {
-	let node, key;
-	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template();
-	if (sharedConfig.completed) sharedConfig.completed.add(node);
-	sharedConfig.registry.delete(key);
-	return node;
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function getHydrationKey() {
-	return sharedConfig.getNextContextId();
-}
-function NoHydration(props) {
-	return sharedConfig.context ? void 0 : props.children;
-}
+"import { getNextElement } from "@solidjs/web";
 function TestHydratableHtml() {
 	return getNextElement();
 }
 function TestHydratableHead() {
-	return createComponent(NoHydration, {});
+	return getNextElement();
 }
 function TestHydratableBody() {
 	return getNextElement();
@@ -61,57 +16,12 @@ export { TestHydratableBody, TestHydratableHead, TestHydratableHtml };
 `;
 
 exports[`rolldown-plugin-solid dist should transform hydratable html/head/body elements 1`] = `
-"const sharedConfig = {
-	context: void 0,
-	registry: void 0,
-	effects: void 0,
-	done: false,
-	getContextId() {
-		return getContextId(this.context.count);
-	},
-	getNextContextId() {
-		return getContextId(this.context.count++);
-	}
-};
-function getContextId(count) {
-	const num = String(count), len = num.length - 1;
-	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
-}
-let Listener = null;
-function untrack(fn) {
-	if (Listener === null) return fn();
-	const listener = Listener;
-	Listener = null;
-	try {
-		return fn();
-	} finally {
-		Listener = listener;
-	}
-}
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
-function getNextElement(template) {
-	let node, key;
-	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template();
-	if (sharedConfig.completed) sharedConfig.completed.add(node);
-	sharedConfig.registry.delete(key);
-	return node;
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function getHydrationKey() {
-	return sharedConfig.getNextContextId();
-}
-function NoHydration(props) {
-	return sharedConfig.context ? void 0 : props.children;
-}
+"import { getNextElement } from "@solidjs/web";
 function TestHydratableHtml() {
 	return getNextElement();
 }
 function TestHydratableHead() {
-	return createComponent(NoHydration, {});
+	return getNextElement();
 }
 function TestHydratableBody() {
 	return getNextElement();

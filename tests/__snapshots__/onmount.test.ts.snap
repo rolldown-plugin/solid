@@ -1,7 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform component with onMount 1`] = `
-"const sharedConfig = {
+"import { createComponent, insert, memo, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -54,24 +55,12 @@ function createSignal(value, options) {
 	};
 	return [readSignal.bind(s), setter];
 }
-function createRenderEffect(fn, value, options) {
-	updateComputation(createComputation(fn, value, false, STALE));
-}
 function createEffect(fn, value, options) {
 	runEffects = runUserEffects;
 	const c = createComputation(fn, value, false, STALE), s = SuspenseContext && useContext(SuspenseContext);
 	if (s) c.suspense = s;
 	if (!options || !options.render) c.user = true;
 	Effects ? Effects.push(c) : updateComputation(c);
-}
-function createMemo(fn, value, options) {
-	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
-	const c = createComputation(fn, value, true, 0);
-	c.observers = null;
-	c.observerSlots = null;
-	c.comparator = options.equals || void 0;
-	updateComputation(c);
-	return readSignal.bind(c);
 }
 function untrack(fn) {
 	if (Listener === null) return fn();
@@ -420,204 +409,15 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
-const memo = (fn) => createMemo(() => fn());
-function reconcileArrays(parentNode, a, b) {
-	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
-	while (aStart < aEnd || bStart < bEnd) {
-		if (a[aStart] === b[bStart]) {
-			aStart++;
-			bStart++;
-			continue;
-		}
-		while (a[aEnd - 1] === b[bEnd - 1]) {
-			aEnd--;
-			bEnd--;
-		}
-		if (aEnd === aStart) {
-			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
-			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
-		} else if (bEnd === bStart) while (aStart < aEnd) {
-			if (!map || !map.has(a[aStart])) a[aStart].remove();
-			aStart++;
-		}
-		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
-			const node = a[--aEnd].nextSibling;
-			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
-			parentNode.insertBefore(b[--bEnd], node);
-			a[aEnd] = b[bEnd];
-		} else {
-			if (!map) {
-				map = /* @__PURE__ */ new Map();
-				let i = bStart;
-				while (i < bEnd) map.set(b[i], i++);
-			}
-			const index = map.get(a[aStart]);
-			if (index != null) {
-				if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-				} else aStart++;
-			} else a[aStart++].remove();
-		}
-	}
-}
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function insertExpression(parent, value, current, marker, unwrapArray) {
-	const hydrating = isHydrating(parent);
-	if (hydrating) {
-		!current && (current = [...parent.childNodes]);
-		let cleaned = [];
-		for (let i = 0; i < current.length; i++) {
-			const node = current[i];
-			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
-			else cleaned.push(node);
-		}
-		current = cleaned;
-	}
-	while (typeof current === "function") current = current();
-	if (value === current) return current;
-	const t = typeof value, multi = marker !== void 0;
-	parent = multi && current[0] && current[0].parentNode || parent;
-	if (t === "string" || t === "number") {
-		if (hydrating) return current;
-		if (t === "number") {
-			value = value.toString();
-			if (value === current) return current;
-		}
-		if (multi) {
-			let node = current[0];
-			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
-			else node = document.createTextNode(value);
-			current = cleanChildren(parent, current, marker, node);
-		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
-		else current = parent.textContent = value;
-	} else if (value == null || t === "boolean") {
-		if (hydrating) return current;
-		current = cleanChildren(parent, current, marker);
-	} else if (t === "function") {
-		createRenderEffect(() => {
-			let v = value();
-			while (typeof v === "function") v = v();
-			current = insertExpression(parent, v, current, marker);
-		});
-		return () => current;
-	} else if (Array.isArray(value)) {
-		const array = [];
-		const currentArray = current && Array.isArray(current);
-		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
-			return () => current;
-		}
-		if (hydrating) {
-			if (!array.length) return current;
-			if (marker === void 0) return current = [...parent.childNodes];
-			let node = array[0];
-			if (node.parentNode !== parent) return current;
-			const nodes = [node];
-			while ((node = node.nextSibling) !== marker) nodes.push(node);
-			return current = nodes;
-		}
-		if (array.length === 0) {
-			current = cleanChildren(parent, current, marker);
-			if (multi) return current;
-		} else if (currentArray) {
-			if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-		} else {
-			current && cleanChildren(parent);
-			appendNodes(parent, array);
-		}
-		current = array;
-	} else if (value.nodeType) {
-		if (hydrating && value.parentNode) return current = multi ? [value] : value;
-		if (Array.isArray(current)) {
-			if (multi) return current = cleanChildren(parent, current, marker, value);
-			cleanChildren(parent, current, null, value);
-		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
-		else parent.replaceChild(value, parent.firstChild);
-		current = value;
-	}
-	return current;
-}
-function normalizeIncomingArray(normalized, array, current, unwrap) {
-	let dynamic = false;
-	for (let i = 0, len = array.length; i < len; i++) {
-		let item = array[i], prev = current && current[normalized.length], t;
-		if (item == null || item === true || item === false);
-		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
-		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") {
-			if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-		} else {
-			const value = String(item);
-			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
-			else normalized.push(document.createTextNode(value));
-		}
-	}
-	return dynamic;
-}
-function appendNodes(parent, array, marker = null) {
-	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
-}
-function cleanChildren(parent, current, marker, replacement) {
-	if (marker === void 0) return parent.textContent = "";
-	const node = replacement || document.createTextNode("");
-	if (current.length) {
-		let inserted = false;
-		for (let i = current.length - 1; i >= 0; i--) {
-			const el = current[i];
-			if (node !== el) {
-				const isParent = el.parentNode === parent;
-				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
-				else isParent && el.remove();
-			} else inserted = true;
-		}
-	} else parent.insertBefore(node, marker);
-	return [node];
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<div class=data-loader><h3>Data Loader Component\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<p>Loading posts...\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<li>\`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div class=timer-component><h4>Timer: <!>s\`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`);
-var _tmpl$7 = /*#__PURE__*/ template(\`<p class=error>Error: \`);
-var _tmpl$8 = /*#__PURE__*/ template(\`<pre>\`);
-var _tmpl$9 = /*#__PURE__*/ template(\`<p>Loading data...\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div class=data-loader><h3>Data Loader Component\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading posts...\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<li>\`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div class=timer-component><h4>Timer: <!>s\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><!><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`);
+var _tmpl$7 = /* @__PURE__ */ template(\`<p class=error>Error: \`);
+var _tmpl$8 = /* @__PURE__ */ template(\`<pre>\`);
+var _tmpl$9 = /* @__PURE__ */ template(\`<p>Loading data...\`);
 const OnMountExample = () => {
 	const [mountedTime, setMountedTime] = createSignal("");
 	const [elapsed, setElapsed] = createSignal(0);
@@ -662,23 +462,29 @@ const OnMountExample = () => {
 				setLoading(false);
 			}
 		});
-		return (() => {
-			var _el$ = _tmpl$();
-			_el$.firstChild;
-			insert(_el$, (() => {
-				var _c$ = memo(() => !!loading());
-				return () => _c$() ? _tmpl$2() : (() => {
+		var _el$ = _tmpl$();
+		_el$.firstChild;
+		insert(_el$, (() => {
+			var _c$ = memo(() => {
+				return !!loading();
+			});
+			return () => {
+				return _c$() ? _tmpl$2() : (() => {
 					var _el$4 = _tmpl$3();
-					insert(_el$4, () => posts().map((post) => (() => {
-						var _el$5 = _tmpl$4();
-						insert(_el$5, () => post.title);
-						return _el$5;
-					})()));
+					insert(_el$4, () => {
+						return posts().map((post) => (() => {
+							var _el$5 = _tmpl$4();
+							insert(_el$5, () => {
+								return post.title;
+							});
+							return _el$5;
+						})());
+					});
 					return _el$4;
 				})();
-			})(), null);
-			return _el$;
-		})();
+			};
+		})(), null);
+		return _el$;
 	};
 	const TimerComponent = () => {
 		const [seconds, setSeconds] = createSignal(0);
@@ -690,47 +496,56 @@ const OnMountExample = () => {
 				clearInterval(timer);
 			});
 		});
-		return (() => {
-			var _el$6 = _tmpl$5(), _el$7 = _el$6.firstChild, _el$0 = _el$7.firstChild.nextSibling;
-			_el$0.nextSibling;
-			insert(_el$7, seconds, _el$0);
-			return _el$6;
-		})();
+		var _el$6 = _tmpl$5();
+		var _el$7 = _el$6.firstChild;
+		var _el$9 = _el$7.firstChild.nextSibling;
+		_el$9.nextSibling;
+		insert(_el$7, seconds, _el$9);
+		return _el$6;
 	};
-	return (() => {
-		var _el$1 = _tmpl$6(), _el$11 = _el$1.firstChild.nextSibling, _el$12 = _el$11.firstChild;
-		_el$12.firstChild;
-		var _el$14 = _el$12.nextSibling, _el$17 = _el$14.firstChild.nextSibling;
-		_el$17.nextSibling;
-		var _el$18 = _el$11.nextSibling;
-		_el$18.firstChild;
-		var _el$20 = _el$18.nextSibling;
-		insert(_el$12, mountedTime, null);
-		insert(_el$14, elapsed, _el$17);
-		insert(_el$18, (() => {
-			var _c$2 = memo(() => !!error());
-			return () => _c$2() ? (() => {
-				var _el$21 = _tmpl$7();
-				_el$21.firstChild;
-				insert(_el$21, error, null);
-				return _el$21;
-			})() : memo(() => !!data())() ? (() => {
-				var _el$23 = _tmpl$8();
-				insert(_el$23, data);
-				return _el$23;
+	var _el$11 = _tmpl$6();
+	var _el$13 = _el$11.firstChild.nextSibling;
+	var _el$14 = _el$13.firstChild;
+	_el$14.firstChild;
+	var _el$16 = _el$14.nextSibling;
+	var _el$18 = _el$16.firstChild.nextSibling;
+	_el$18.nextSibling;
+	var _el$20 = _el$13.nextSibling;
+	_el$20.firstChild;
+	var _el$22 = _el$20.nextSibling;
+	var _el$23 = _el$22.nextSibling;
+	insert(_el$14, mountedTime, null);
+	insert(_el$16, elapsed, _el$18);
+	insert(_el$20, (() => {
+		var _c$2 = memo(() => {
+			return !!error();
+		});
+		return () => {
+			return _c$2() ? (() => {
+				var _el$24 = _tmpl$7();
+				_el$24.firstChild;
+				insert(_el$24, error, null);
+				return _el$24;
+			})() : memo(() => {
+				return !!data();
+			})() ? (() => {
+				var _el$26 = _tmpl$8();
+				insert(_el$26, data);
+				return _el$26;
 			})() : _tmpl$9();
-		})(), null);
-		insert(_el$1, createComponent(DataLoader, {}), _el$20);
-		insert(_el$1, createComponent(TimerComponent, {}), _el$20);
-		return _el$1;
-	})();
+		};
+	})(), null);
+	insert(_el$11, createComponent(DataLoader, {}), _el$22);
+	insert(_el$11, createComponent(TimerComponent, {}), _el$23);
+	return _el$11;
 };
 export { OnMountExample as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with onMount 1`] = `
-"const sharedConfig = {
+"import { createComponent, insert, memo, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -783,24 +598,12 @@ function createSignal(value, options) {
 	};
 	return [readSignal.bind(s), setter];
 }
-function createRenderEffect(fn, value, options) {
-	updateComputation(createComputation(fn, value, false, STALE));
-}
 function createEffect(fn, value, options) {
 	runEffects = runUserEffects;
 	const c = createComputation(fn, value, false, STALE), s = SuspenseContext && useContext(SuspenseContext);
 	if (s) c.suspense = s;
 	if (!options || !options.render) c.user = true;
 	Effects ? Effects.push(c) : updateComputation(c);
-}
-function createMemo(fn, value, options) {
-	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
-	const c = createComputation(fn, value, true, 0);
-	c.observers = null;
-	c.observerSlots = null;
-	c.comparator = options.equals || void 0;
-	updateComputation(c);
-	return readSignal.bind(c);
 }
 function untrack(fn) {
 	if (Listener === null) return fn();
@@ -1149,204 +952,15 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
-const memo = (fn) => createMemo(() => fn());
-function reconcileArrays(parentNode, a, b) {
-	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
-	while (aStart < aEnd || bStart < bEnd) {
-		if (a[aStart] === b[bStart]) {
-			aStart++;
-			bStart++;
-			continue;
-		}
-		while (a[aEnd - 1] === b[bEnd - 1]) {
-			aEnd--;
-			bEnd--;
-		}
-		if (aEnd === aStart) {
-			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
-			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
-		} else if (bEnd === bStart) while (aStart < aEnd) {
-			if (!map || !map.has(a[aStart])) a[aStart].remove();
-			aStart++;
-		}
-		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
-			const node = a[--aEnd].nextSibling;
-			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
-			parentNode.insertBefore(b[--bEnd], node);
-			a[aEnd] = b[bEnd];
-		} else {
-			if (!map) {
-				map = /* @__PURE__ */ new Map();
-				let i = bStart;
-				while (i < bEnd) map.set(b[i], i++);
-			}
-			const index = map.get(a[aStart]);
-			if (index != null) {
-				if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-				} else aStart++;
-			} else a[aStart++].remove();
-		}
-	}
-}
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function insertExpression(parent, value, current, marker, unwrapArray) {
-	const hydrating = isHydrating(parent);
-	if (hydrating) {
-		!current && (current = [...parent.childNodes]);
-		let cleaned = [];
-		for (let i = 0; i < current.length; i++) {
-			const node = current[i];
-			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
-			else cleaned.push(node);
-		}
-		current = cleaned;
-	}
-	while (typeof current === "function") current = current();
-	if (value === current) return current;
-	const t = typeof value, multi = marker !== void 0;
-	parent = multi && current[0] && current[0].parentNode || parent;
-	if (t === "string" || t === "number") {
-		if (hydrating) return current;
-		if (t === "number") {
-			value = value.toString();
-			if (value === current) return current;
-		}
-		if (multi) {
-			let node = current[0];
-			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
-			else node = document.createTextNode(value);
-			current = cleanChildren(parent, current, marker, node);
-		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
-		else current = parent.textContent = value;
-	} else if (value == null || t === "boolean") {
-		if (hydrating) return current;
-		current = cleanChildren(parent, current, marker);
-	} else if (t === "function") {
-		createRenderEffect(() => {
-			let v = value();
-			while (typeof v === "function") v = v();
-			current = insertExpression(parent, v, current, marker);
-		});
-		return () => current;
-	} else if (Array.isArray(value)) {
-		const array = [];
-		const currentArray = current && Array.isArray(current);
-		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
-			return () => current;
-		}
-		if (hydrating) {
-			if (!array.length) return current;
-			if (marker === void 0) return current = [...parent.childNodes];
-			let node = array[0];
-			if (node.parentNode !== parent) return current;
-			const nodes = [node];
-			while ((node = node.nextSibling) !== marker) nodes.push(node);
-			return current = nodes;
-		}
-		if (array.length === 0) {
-			current = cleanChildren(parent, current, marker);
-			if (multi) return current;
-		} else if (currentArray) {
-			if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-		} else {
-			current && cleanChildren(parent);
-			appendNodes(parent, array);
-		}
-		current = array;
-	} else if (value.nodeType) {
-		if (hydrating && value.parentNode) return current = multi ? [value] : value;
-		if (Array.isArray(current)) {
-			if (multi) return current = cleanChildren(parent, current, marker, value);
-			cleanChildren(parent, current, null, value);
-		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
-		else parent.replaceChild(value, parent.firstChild);
-		current = value;
-	}
-	return current;
-}
-function normalizeIncomingArray(normalized, array, current, unwrap) {
-	let dynamic = false;
-	for (let i = 0, len = array.length; i < len; i++) {
-		let item = array[i], prev = current && current[normalized.length], t;
-		if (item == null || item === true || item === false);
-		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
-		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") {
-			if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-		} else {
-			const value = String(item);
-			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
-			else normalized.push(document.createTextNode(value));
-		}
-	}
-	return dynamic;
-}
-function appendNodes(parent, array, marker = null) {
-	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
-}
-function cleanChildren(parent, current, marker, replacement) {
-	if (marker === void 0) return parent.textContent = "";
-	const node = replacement || document.createTextNode("");
-	if (current.length) {
-		let inserted = false;
-		for (let i = current.length - 1; i >= 0; i--) {
-			const el = current[i];
-			if (node !== el) {
-				const isParent = el.parentNode === parent;
-				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
-				else isParent && el.remove();
-			} else inserted = true;
-		}
-	} else parent.insertBefore(node, marker);
-	return [node];
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<div class=data-loader><h3>Data Loader Component\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<p>Loading posts...\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<li>\`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div class=timer-component><h4>Timer: <!>s\`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`);
-var _tmpl$7 = /*#__PURE__*/ template(\`<p class=error>Error: \`);
-var _tmpl$8 = /*#__PURE__*/ template(\`<pre>\`);
-var _tmpl$9 = /*#__PURE__*/ template(\`<p>Loading data...\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div class=data-loader><h3>Data Loader Component\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading posts...\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<li>\`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div class=timer-component><h4>Timer: <!>s\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><!><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`);
+var _tmpl$7 = /* @__PURE__ */ template(\`<p class=error>Error: \`);
+var _tmpl$8 = /* @__PURE__ */ template(\`<pre>\`);
+var _tmpl$9 = /* @__PURE__ */ template(\`<p>Loading data...\`);
 const OnMountExample = () => {
 	const [mountedTime, setMountedTime] = createSignal("");
 	const [elapsed, setElapsed] = createSignal(0);
@@ -1391,23 +1005,29 @@ const OnMountExample = () => {
 				setLoading(false);
 			}
 		});
-		return (() => {
-			var _el$ = _tmpl$();
-			_el$.firstChild;
-			insert(_el$, (() => {
-				var _c$ = memo(() => !!loading());
-				return () => _c$() ? _tmpl$2() : (() => {
+		var _el$ = _tmpl$();
+		_el$.firstChild;
+		insert(_el$, (() => {
+			var _c$ = memo(() => {
+				return !!loading();
+			});
+			return () => {
+				return _c$() ? _tmpl$2() : (() => {
 					var _el$4 = _tmpl$3();
-					insert(_el$4, () => posts().map((post) => (() => {
-						var _el$5 = _tmpl$4();
-						insert(_el$5, () => post.title);
-						return _el$5;
-					})()));
+					insert(_el$4, () => {
+						return posts().map((post) => (() => {
+							var _el$5 = _tmpl$4();
+							insert(_el$5, () => {
+								return post.title;
+							});
+							return _el$5;
+						})());
+					});
 					return _el$4;
 				})();
-			})(), null);
-			return _el$;
-		})();
+			};
+		})(), null);
+		return _el$;
 	};
 	const TimerComponent = () => {
 		const [seconds, setSeconds] = createSignal(0);
@@ -1419,40 +1039,48 @@ const OnMountExample = () => {
 				clearInterval(timer);
 			});
 		});
-		return (() => {
-			var _el$6 = _tmpl$5(), _el$7 = _el$6.firstChild, _el$0 = _el$7.firstChild.nextSibling;
-			_el$0.nextSibling;
-			insert(_el$7, seconds, _el$0);
-			return _el$6;
-		})();
+		var _el$6 = _tmpl$5();
+		var _el$7 = _el$6.firstChild;
+		var _el$9 = _el$7.firstChild.nextSibling;
+		_el$9.nextSibling;
+		insert(_el$7, seconds, _el$9);
+		return _el$6;
 	};
-	return (() => {
-		var _el$1 = _tmpl$6(), _el$11 = _el$1.firstChild.nextSibling, _el$12 = _el$11.firstChild;
-		_el$12.firstChild;
-		var _el$14 = _el$12.nextSibling, _el$17 = _el$14.firstChild.nextSibling;
-		_el$17.nextSibling;
-		var _el$18 = _el$11.nextSibling;
-		_el$18.firstChild;
-		var _el$20 = _el$18.nextSibling;
-		insert(_el$12, mountedTime, null);
-		insert(_el$14, elapsed, _el$17);
-		insert(_el$18, (() => {
-			var _c$2 = memo(() => !!error());
-			return () => _c$2() ? (() => {
-				var _el$21 = _tmpl$7();
-				_el$21.firstChild;
-				insert(_el$21, error, null);
-				return _el$21;
-			})() : memo(() => !!data())() ? (() => {
-				var _el$23 = _tmpl$8();
-				insert(_el$23, data);
-				return _el$23;
+	var _el$11 = _tmpl$6();
+	var _el$13 = _el$11.firstChild.nextSibling;
+	var _el$14 = _el$13.firstChild;
+	_el$14.firstChild;
+	var _el$16 = _el$14.nextSibling;
+	var _el$18 = _el$16.firstChild.nextSibling;
+	_el$18.nextSibling;
+	var _el$20 = _el$13.nextSibling;
+	_el$20.firstChild;
+	var _el$22 = _el$20.nextSibling;
+	var _el$23 = _el$22.nextSibling;
+	insert(_el$14, mountedTime, null);
+	insert(_el$16, elapsed, _el$18);
+	insert(_el$20, (() => {
+		var _c$2 = memo(() => {
+			return !!error();
+		});
+		return () => {
+			return _c$2() ? (() => {
+				var _el$24 = _tmpl$7();
+				_el$24.firstChild;
+				insert(_el$24, error, null);
+				return _el$24;
+			})() : memo(() => {
+				return !!data();
+			})() ? (() => {
+				var _el$26 = _tmpl$8();
+				insert(_el$26, data);
+				return _el$26;
 			})() : _tmpl$9();
-		})(), null);
-		insert(_el$1, createComponent(DataLoader, {}), _el$20);
-		insert(_el$1, createComponent(TimerComponent, {}), _el$20);
-		return _el$1;
-	})();
+		};
+	})(), null);
+	insert(_el$11, createComponent(DataLoader, {}), _el$22);
+	insert(_el$11, createComponent(TimerComponent, {}), _el$23);
+	return _el$11;
 };
 export { OnMountExample as default };
 "

@@ -1,7 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform component with Portal 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, insert, memo, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -450,10 +451,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
-const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -501,83 +498,13 @@ function reconcileArrays(parentNode, a, b) {
 		}
 	}
 }
-const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
+function insert$1(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
 }
 function isHydrating(node) {
 	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
 	const hydrating = isHydrating(parent);
@@ -713,7 +640,7 @@ function Portal(props) {
 		if (el instanceof HTMLHeadElement) {
 			const [clean, setClean] = createSignal(false);
 			const cleanup = () => setClean(true);
-			createRoot((dispose) => insert(el, () => !clean() ? content() : dispose(), null));
+			createRoot((dispose) => insert$1(el, () => !clean() ? content() : dispose(), null));
 			onCleanup(cleanup);
 		} else {
 			const container = createElement(props.isSVG ? "g" : "div", props.isSVG), renderRoot = useShadow && container.attachShadow ? container.attachShadow({ mode: "open" }) : container;
@@ -723,7 +650,7 @@ function Portal(props) {
 				},
 				configurable: true
 			});
-			insert(renderRoot, content);
+			insert$1(renderRoot, content);
 			el.appendChild(container);
 			props.ref && props.ref(container);
 			onCleanup(() => el.contains(container) && el.removeChild(container));
@@ -731,10 +658,10 @@ function Portal(props) {
 	}, void 0, { render: !hydrating });
 	return marker;
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div class=notification><p>This notification is always rendered in a different container\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div class=tooltip style=position:fixed;top:10px;right:10px>This tooltip is rendered directly to document.body\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<div class=portal-example><h2>Portal Example</h2><button>Open Modal</button><button>Open Different Modal\`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<div class=modal-overlay><div class=modal-content><h3>Modal</h3><p></p><button>Close\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div class=notification><p>This notification is always rendered in a different container\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div class=tooltip style=position:fixed;top:10px;right:10px>This tooltip is rendered directly to document.body\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<div class=portal-example><h2>Portal Example</h2><button>Open Modal</button><button>Open Different Modal</button><!><!><!>\`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<div class=modal-overlay><div class=modal-content><h3>Modal</h3><p></p><button>Close\`);
 const Modal = () => {
 	const [isOpen, setIsOpen] = createSignal(false);
 	const [message, setMessage] = createSignal("");
@@ -745,39 +672,49 @@ const Modal = () => {
 	const closeModal = () => {
 		setIsOpen(false);
 	};
-	return (() => {
-		var _el$ = _tmpl$3(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.nextSibling;
-		_el$3.$$click = () => openModal("Hello from Portal!");
-		_el$4.$$click = () => openModal("Different message");
-		insert(_el$, (() => {
-			var _c$ = memo(() => !!isOpen());
-			return () => _c$() && createComponent(Portal, {
+	var _el$ = _tmpl$3();
+	var _el$3 = _el$.firstChild.nextSibling;
+	var _el$4 = _el$3.nextSibling;
+	var _el$5 = _el$4.nextSibling;
+	var _el$7 = _el$5.nextSibling;
+	var _el$9 = _el$7.nextSibling;
+	_el$3.$$click = () => openModal("Hello from Portal!");
+	_el$4.$$click = () => openModal("Different message");
+	insert(_el$, (() => {
+		var _c$ = memo(() => {
+			return !!isOpen();
+		});
+		return () => {
+			return _c$() ? createComponent(Portal, {
 				get mount() {
 					return document.getElementById("modal-root");
 				},
 				get children() {
-					var _el$7 = _tmpl$4(), _el$8 = _el$7.firstChild, _el$0 = _el$8.firstChild.nextSibling, _el$1 = _el$0.nextSibling;
-					_el$7.$$click = closeModal;
-					_el$8.$$click = (e) => e.stopPropagation();
-					insert(_el$0, message);
-					_el$1.$$click = closeModal;
-					return _el$7;
+					var _el$10 = _tmpl$4();
+					var _el$11 = _el$10.firstChild;
+					var _el$13 = _el$11.firstChild.nextSibling;
+					var _el$14 = _el$13.nextSibling;
+					_el$10.$$click = closeModal;
+					_el$11.$$click = (e) => e.stopPropagation();
+					insert(_el$13, message);
+					_el$14.$$click = closeModal;
+					return _el$10;
 				}
-			});
-		})(), null);
-		insert(_el$, createComponent(Portal, {
-			get mount() {
-				return document.getElementById("notifications");
-			},
-			get children() {
-				return _tmpl$();
-			}
-		}), null);
-		insert(_el$, createComponent(Portal, { get children() {
-			return _tmpl$2();
-		} }), null);
-		return _el$;
-	})();
+			}) : isOpen();
+		};
+	})(), _el$5);
+	insert(_el$, createComponent(Portal, {
+		get mount() {
+			return document.getElementById("notifications");
+		},
+		get children() {
+			return _tmpl$();
+		}
+	}), _el$7);
+	insert(_el$, createComponent(Portal, { get children() {
+		return _tmpl$2();
+	} }), _el$9);
+	return _el$;
 };
 delegateEvents(["click"]);
 export { Modal as default };
@@ -785,7 +722,8 @@ export { Modal as default };
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with Portal 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, insert, memo, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1234,10 +1172,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
-const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -1285,83 +1219,13 @@ function reconcileArrays(parentNode, a, b) {
 		}
 	}
 }
-const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
+function insert$1(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
 }
 function isHydrating(node) {
 	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
 	const hydrating = isHydrating(parent);
@@ -1497,7 +1361,7 @@ function Portal(props) {
 		if (el instanceof HTMLHeadElement) {
 			const [clean, setClean] = createSignal(false);
 			const cleanup = () => setClean(true);
-			createRoot((dispose) => insert(el, () => !clean() ? content() : dispose(), null));
+			createRoot((dispose) => insert$1(el, () => !clean() ? content() : dispose(), null));
 			onCleanup(cleanup);
 		} else {
 			const container = createElement(props.isSVG ? "g" : "div", props.isSVG), renderRoot = useShadow && container.attachShadow ? container.attachShadow({ mode: "open" }) : container;
@@ -1507,7 +1371,7 @@ function Portal(props) {
 				},
 				configurable: true
 			});
-			insert(renderRoot, content);
+			insert$1(renderRoot, content);
 			el.appendChild(container);
 			props.ref && props.ref(container);
 			onCleanup(() => el.contains(container) && el.removeChild(container));
@@ -1515,10 +1379,10 @@ function Portal(props) {
 	}, void 0, { render: !hydrating });
 	return marker;
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div class=notification><p>This notification is always rendered in a different container\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div class=tooltip style=position:fixed;top:10px;right:10px>This tooltip is rendered directly to document.body\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<div class=portal-example><h2>Portal Example</h2><button>Open Modal</button><button>Open Different Modal\`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<div class=modal-overlay><div class=modal-content><h3>Modal</h3><p></p><button>Close\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div class=notification><p>This notification is always rendered in a different container\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div class=tooltip style=position:fixed;top:10px;right:10px>This tooltip is rendered directly to document.body\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<div class=portal-example><h2>Portal Example</h2><button>Open Modal</button><button>Open Different Modal</button><!><!><!>\`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<div class=modal-overlay><div class=modal-content><h3>Modal</h3><p></p><button>Close\`);
 const Modal = () => {
 	const [isOpen, setIsOpen] = createSignal(false);
 	const [message, setMessage] = createSignal("");
@@ -1529,39 +1393,49 @@ const Modal = () => {
 	const closeModal = () => {
 		setIsOpen(false);
 	};
-	return (() => {
-		var _el$ = _tmpl$3(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.nextSibling;
-		_el$3.$$click = () => openModal("Hello from Portal!");
-		_el$4.$$click = () => openModal("Different message");
-		insert(_el$, (() => {
-			var _c$ = memo(() => !!isOpen());
-			return () => _c$() && createComponent(Portal, {
+	var _el$ = _tmpl$3();
+	var _el$3 = _el$.firstChild.nextSibling;
+	var _el$4 = _el$3.nextSibling;
+	var _el$5 = _el$4.nextSibling;
+	var _el$7 = _el$5.nextSibling;
+	var _el$9 = _el$7.nextSibling;
+	_el$3.$$click = () => openModal("Hello from Portal!");
+	_el$4.$$click = () => openModal("Different message");
+	insert(_el$, (() => {
+		var _c$ = memo(() => {
+			return !!isOpen();
+		});
+		return () => {
+			return _c$() ? createComponent(Portal, {
 				get mount() {
 					return document.getElementById("modal-root");
 				},
 				get children() {
-					var _el$7 = _tmpl$4(), _el$8 = _el$7.firstChild, _el$0 = _el$8.firstChild.nextSibling, _el$1 = _el$0.nextSibling;
-					_el$7.$$click = closeModal;
-					_el$8.$$click = (e) => e.stopPropagation();
-					insert(_el$0, message);
-					_el$1.$$click = closeModal;
-					return _el$7;
+					var _el$10 = _tmpl$4();
+					var _el$11 = _el$10.firstChild;
+					var _el$13 = _el$11.firstChild.nextSibling;
+					var _el$14 = _el$13.nextSibling;
+					_el$10.$$click = closeModal;
+					_el$11.$$click = (e) => e.stopPropagation();
+					insert(_el$13, message);
+					_el$14.$$click = closeModal;
+					return _el$10;
 				}
-			});
-		})(), null);
-		insert(_el$, createComponent(Portal, {
-			get mount() {
-				return document.getElementById("notifications");
-			},
-			get children() {
-				return _tmpl$();
-			}
-		}), null);
-		insert(_el$, createComponent(Portal, { get children() {
-			return _tmpl$2();
-		} }), null);
-		return _el$;
-	})();
+			}) : isOpen();
+		};
+	})(), _el$5);
+	insert(_el$, createComponent(Portal, {
+		get mount() {
+			return document.getElementById("notifications");
+		},
+		get children() {
+			return _tmpl$();
+		}
+	}), _el$7);
+	insert(_el$, createComponent(Portal, { get children() {
+		return _tmpl$2();
+	} }), _el$9);
+	return _el$;
 };
 delegateEvents(["click"]);
 export { Modal as default };

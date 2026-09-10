@@ -1,7 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform basic SolidJS component 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, insert, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -381,9 +382,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -431,94 +429,24 @@ function reconcileArrays(parentNode, a, b) {
 		}
 	}
 }
-const $$EVENTS = "_$DX_DELEGATE";
 function render(code, element, init, options = {}) {
 	let disposer;
 	createRoot((dispose) => {
 		disposer = dispose;
-		element === document ? code() : insert(element, code(), element.firstChild ? null : void 0, init);
+		element === document ? code() : insert$1(element, code(), element.firstChild ? null : void 0, init);
 	}, options.owner);
 	return () => {
 		disposer();
 		element.textContent = "";
 	};
 }
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
+function insert$1(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
 }
 function isHydrating(node) {
 	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
 	const hydrating = isHydrating(parent);
@@ -639,16 +567,14 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<button type=button>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
 const App = () => {
 	const [count, setCount] = createSignal(0);
 	const inc = (by = 1) => setCount(count() + by);
-	return (() => {
-		var _el$ = _tmpl$();
-		_el$.$$click = () => inc(1);
-		insert(_el$, count);
-		return _el$;
-	})();
+	var _el$ = _tmpl$();
+	_el$.$$click = () => inc(1);
+	insert(_el$, count);
+	return _el$;
 };
 render(() => createComponent(App, {}), document.getElementById("app"));
 delegateEvents(["click"]);
@@ -656,7 +582,8 @@ delegateEvents(["click"]);
 `;
 
 exports[`rolldown-plugin-solid dist should transform basic SolidJS component 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, insert, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1036,9 +963,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -1086,94 +1010,24 @@ function reconcileArrays(parentNode, a, b) {
 		}
 	}
 }
-const $$EVENTS = "_$DX_DELEGATE";
 function render(code, element, init, options = {}) {
 	let disposer;
 	createRoot((dispose) => {
 		disposer = dispose;
-		element === document ? code() : insert(element, code(), element.firstChild ? null : void 0, init);
+		element === document ? code() : insert$1(element, code(), element.firstChild ? null : void 0, init);
 	}, options.owner);
 	return () => {
 		disposer();
 		element.textContent = "";
 	};
 }
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
+function insert$1(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
 }
 function isHydrating(node) {
 	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
 	const hydrating = isHydrating(parent);
@@ -1294,16 +1148,14 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<button type=button>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
 const App = () => {
 	const [count, setCount] = createSignal(0);
 	const inc = (by = 1) => setCount(count() + by);
-	return (() => {
-		var _el$ = _tmpl$();
-		_el$.$$click = () => inc(1);
-		insert(_el$, count);
-		return _el$;
-	})();
+	var _el$ = _tmpl$();
+	_el$.$$click = () => inc(1);
+	insert(_el$, count);
+	return _el$;
 };
 render(() => createComponent(App, {}), document.getElementById("app"));
 delegateEvents(["click"]);
@@ -1311,7 +1163,8 @@ delegateEvents(["click"]);
 `;
 
 exports[`rolldown-plugin-solid src should transform component with hydratable option 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, getNextElement, insert, runHydrationEvents, scope, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1691,9 +1544,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -1741,121 +1591,24 @@ function reconcileArrays(parentNode, a, b) {
 		}
 	}
 }
-const $$EVENTS = "_$DX_DELEGATE";
 function render(code, element, init, options = {}) {
 	let disposer;
 	createRoot((dispose) => {
 		disposer = dispose;
-		element === document ? code() : insert(element, code(), element.firstChild ? null : void 0, init);
+		element === document ? code() : insert$1(element, code(), element.firstChild ? null : void 0, init);
 	}, options.owner);
 	return () => {
 		disposer();
 		element.textContent = "";
 	};
 }
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
+function insert$1(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
 }
-function getNextElement(template) {
-	let node, key;
-	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template();
-	if (sharedConfig.completed) sharedConfig.completed.add(node);
-	sharedConfig.registry.delete(key);
-	return node;
-}
-function runHydrationEvents() {
-	if (sharedConfig.events && !sharedConfig.events.queued) {
-		queueMicrotask(() => {
-			const { completed, events } = sharedConfig;
-			if (!events) return;
-			events.queued = false;
-			while (events.length) {
-				const [el, e] = events[0];
-				if (!completed.has(el)) return;
-				events.shift();
-				eventHandler(e);
-			}
-			if (sharedConfig.done) {
-				sharedConfig.events = _$HY.events = null;
-				sharedConfig.completed = _$HY.completed = null;
-			}
-		});
-		sharedConfig.events.queued = true;
-	}
-}
 function isHydrating(node) {
 	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
 	const hydrating = isHydrating(parent);
@@ -1976,20 +1729,17 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-function getHydrationKey() {
-	return sharedConfig.getNextContextId();
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<button type=button>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
 const App = () => {
 	const [count, setCount] = createSignal(0);
 	const inc = (by = 1) => setCount(count() + by);
-	return (() => {
-		var _el$ = getNextElement(_tmpl$);
-		_el$.$$click = () => inc(1);
-		insert(_el$, count);
-		runHydrationEvents();
-		return _el$;
-	})();
+	var _el$ = getNextElement(_tmpl$);
+	_el$.$$click = () => inc(1);
+	insert(_el$, scope(() => {
+		return count();
+	}));
+	runHydrationEvents();
+	return _el$;
 };
 render(() => createComponent(App, {}), document.getElementById("app"));
 delegateEvents(["click"]);
@@ -1997,7 +1747,8 @@ delegateEvents(["click"]);
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with hydratable option 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, getNextElement, insert, runHydrationEvents, scope, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -2377,9 +2128,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -2427,121 +2175,24 @@ function reconcileArrays(parentNode, a, b) {
 		}
 	}
 }
-const $$EVENTS = "_$DX_DELEGATE";
 function render(code, element, init, options = {}) {
 	let disposer;
 	createRoot((dispose) => {
 		disposer = dispose;
-		element === document ? code() : insert(element, code(), element.firstChild ? null : void 0, init);
+		element === document ? code() : insert$1(element, code(), element.firstChild ? null : void 0, init);
 	}, options.owner);
 	return () => {
 		disposer();
 		element.textContent = "";
 	};
 }
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
+function insert$1(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
 }
-function getNextElement(template) {
-	let node, key;
-	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template();
-	if (sharedConfig.completed) sharedConfig.completed.add(node);
-	sharedConfig.registry.delete(key);
-	return node;
-}
-function runHydrationEvents() {
-	if (sharedConfig.events && !sharedConfig.events.queued) {
-		queueMicrotask(() => {
-			const { completed, events } = sharedConfig;
-			if (!events) return;
-			events.queued = false;
-			while (events.length) {
-				const [el, e] = events[0];
-				if (!completed.has(el)) return;
-				events.shift();
-				eventHandler(e);
-			}
-			if (sharedConfig.done) {
-				sharedConfig.events = _$HY.events = null;
-				sharedConfig.completed = _$HY.completed = null;
-			}
-		});
-		sharedConfig.events.queued = true;
-	}
-}
 function isHydrating(node) {
 	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
 	const hydrating = isHydrating(parent);
@@ -2662,20 +2313,17 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-function getHydrationKey() {
-	return sharedConfig.getNextContextId();
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<button type=button>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
 const App = () => {
 	const [count, setCount] = createSignal(0);
 	const inc = (by = 1) => setCount(count() + by);
-	return (() => {
-		var _el$ = getNextElement(_tmpl$);
-		_el$.$$click = () => inc(1);
-		insert(_el$, count);
-		runHydrationEvents();
-		return _el$;
-	})();
+	var _el$ = getNextElement(_tmpl$);
+	_el$.$$click = () => inc(1);
+	insert(_el$, scope(() => {
+		return count();
+	}));
+	runHydrationEvents();
+	return _el$;
 };
 render(() => createComponent(App, {}), document.getElementById("app"));
 delegateEvents(["click"]);

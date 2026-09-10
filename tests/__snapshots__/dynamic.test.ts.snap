@@ -1,7 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform component with Dynamic 1`] = `
-"const sharedConfig = {
+"import { addEvent, createComponent, delegateEvents, insert, mergeProps, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -376,9 +377,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
 function trueFn() {
 	return true;
 }
@@ -408,72 +406,6 @@ const propTraps = {
 		return _.keys();
 	}
 };
-function resolveSource(s) {
-	return !(s = typeof s === "function" ? s() : s) ? {} : s;
-}
-function resolveSources() {
-	for (let i = 0, length = this.length; i < length; ++i) {
-		const v = this[i]();
-		if (v !== void 0) return v;
-	}
-}
-function mergeProps(...sources) {
-	let proxy = false;
-	for (let i = 0; i < sources.length; i++) {
-		const s = sources[i];
-		proxy = proxy || !!s && $PROXY in s;
-		sources[i] = typeof s === "function" ? (proxy = true, createMemo(s)) : s;
-	}
-	if (SUPPORTS_PROXY && proxy) return new Proxy({
-		get(property) {
-			for (let i = sources.length - 1; i >= 0; i--) {
-				const v = resolveSource(sources[i])[property];
-				if (v !== void 0) return v;
-			}
-		},
-		has(property) {
-			for (let i = sources.length - 1; i >= 0; i--) if (property in resolveSource(sources[i])) return true;
-			return false;
-		},
-		keys() {
-			const keys = [];
-			for (let i = 0; i < sources.length; i++) keys.push(...Object.keys(resolveSource(sources[i])));
-			return [...new Set(keys)];
-		}
-	}, propTraps);
-	const sourcesMap = {};
-	const defined = Object.create(null);
-	for (let i = sources.length - 1; i >= 0; i--) {
-		const source = sources[i];
-		if (!source) continue;
-		const sourceKeys = Object.getOwnPropertyNames(source);
-		for (let i = sourceKeys.length - 1; i >= 0; i--) {
-			const key = sourceKeys[i];
-			if (key === "__proto__" || key === "constructor") continue;
-			const desc = Object.getOwnPropertyDescriptor(source, key);
-			if (!defined[key]) defined[key] = desc.get ? {
-				enumerable: true,
-				configurable: true,
-				get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
-			} : desc.value !== void 0 ? desc : void 0;
-			else {
-				const sources = sourcesMap[key];
-				if (sources) {
-					if (desc.get) sources.push(desc.get.bind(source));
-					else if (desc.value !== void 0) sources.push(() => desc.value);
-				}
-			}
-		}
-	}
-	const target = {};
-	const definedKeys = Object.keys(defined);
-	for (let i = definedKeys.length - 1; i >= 0; i--) {
-		const key = definedKeys[i], desc = defined[key];
-		if (desc && desc.get) Object.defineProperty(target, key, desc);
-		else target[key] = desc ? desc.value : void 0;
-	}
-	return target;
-}
 function splitProps(props, ...keys) {
 	const len = keys.length;
 	if (SUPPORTS_PROXY && $PROXY in props) {
@@ -840,18 +772,7 @@ function reconcileArrays(parentNode, a, b) {
 	}
 }
 const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
+function delegateEvents$1(eventNames, document = window.document) {
 	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
@@ -939,11 +860,6 @@ function spread(node, props = {}, isSVG, skipChildren) {
 function use(fn, element, arg) {
 	return untrack(() => fn(element, arg));
 }
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
 function assign(node, props, isSVG, skipChildren, prevProps = {}, skipRef = false) {
 	props || (props = {});
 	for (const prop in prevProps) if (!(prop in props)) {
@@ -1000,7 +916,7 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
 		}
 		if (delegate || value) {
 			addEventListener(node, name, value, delegate);
-			delegate && delegateEvents([name]);
+			delegate && delegateEvents$1([name]);
 		}
 	} else if (prop.slice(0, 5) === "attr:") setAttribute(node, prop.slice(5), value);
 	else if (prop.slice(0, 5) === "bool:") setBoolAttribute(node, prop.slice(5), value);
@@ -1212,31 +1128,41 @@ function Dynamic(props) {
 	const [, others] = splitProps(props, ["component"]);
 	return createDynamic(() => props.component, others);
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<button>\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div class=card><h3></h3><p>\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<li>\`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div class=dynamic-example><h2>Dynamic Component Example</h2><div class=controls></div><div class=dynamic-container></div><div class=conditional-dynamic><h3>Conditional Dynamic Rendering</h3><button>Clear Component</button><button>Show Button Again\`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<div>No Component\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<button>\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div class=card><h3></h3><p>\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<li>\`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div class=dynamic-example><h2>Dynamic Component Example</h2><div class=controls></div><div class=dynamic-container></div><div class=conditional-dynamic><h3>Conditional Dynamic Rendering</h3><button>Clear Component</button><button>Show Button Again\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<div>No Component\`);
 const Button = (props) => (() => {
 	var _el$ = _tmpl$();
-	addEventListener(_el$, "click", props.onClick, true);
-	insert(_el$, () => props.text);
+	addEvent(_el$, "click", props.onClick, true);
+	insert(_el$, () => {
+		return props.text;
+	});
 	return _el$;
 })();
 const Card = (props) => (() => {
-	var _el$2 = _tmpl$2(), _el$3 = _el$2.firstChild, _el$4 = _el$3.nextSibling;
-	insert(_el$3, () => props.title);
-	insert(_el$4, () => props.content);
+	var _el$2 = _tmpl$2();
+	var _el$3 = _el$2.firstChild;
+	var _el$4 = _el$3.nextSibling;
+	insert(_el$3, () => {
+		return props.title;
+	});
+	insert(_el$4, () => {
+		return props.content;
+	});
 	return _el$2;
 })();
 const List = (props) => (() => {
 	var _el$5 = _tmpl$3();
-	insert(_el$5, () => props.items.map((item) => (() => {
-		var _el$6 = _tmpl$4();
-		insert(_el$6, item);
-		return _el$6;
-	})()));
+	insert(_el$5, () => {
+		return props.items.map((item) => (() => {
+			var _el$6 = _tmpl$4();
+			insert(_el$6, item);
+			return _el$6;
+		})());
+	});
 	return _el$5;
 })();
 const App = () => {
@@ -1278,21 +1204,27 @@ const App = () => {
 			] });
 		}
 	};
-	return (() => {
-		var _el$7 = _tmpl$5(), _el$9 = _el$7.firstChild.nextSibling, _el$0 = _el$9.nextSibling, _el$11 = _el$0.nextSibling.firstChild.nextSibling, _el$12 = _el$11.nextSibling;
-		insert(_el$9, () => components.map((comp) => (() => {
-			var _el$13 = _tmpl$();
-			_el$13.$$click = () => switchComponent(comp.name);
-			insert(_el$13, () => comp.name);
-			return _el$13;
-		})()));
-		insert(_el$0, createComponent(Dynamic, mergeProps({ get component() {
-			return selectedComponent();
-		} }, componentProps)));
-		_el$11.$$click = () => setSelectedComponent(() => () => _tmpl$6());
-		_el$12.$$click = () => switchComponent("Button");
-		return _el$7;
-	})();
+	var _el$7 = _tmpl$5();
+	var _el$9 = _el$7.firstChild.nextSibling;
+	var _el$10 = _el$9.nextSibling;
+	var _el$13 = _el$10.nextSibling.firstChild.nextSibling;
+	var _el$14 = _el$13.nextSibling;
+	insert(_el$9, () => {
+		return components.map((comp) => (() => {
+			var _el$15 = _tmpl$();
+			_el$15.$$click = () => switchComponent(comp.name);
+			insert(_el$15, () => {
+				return comp.name;
+			});
+			return _el$15;
+		})());
+	});
+	insert(_el$10, createComponent(Dynamic, mergeProps({ get component() {
+		return selectedComponent();
+	} }, componentProps)));
+	_el$13.$$click = () => setSelectedComponent(() => () => _tmpl$6());
+	_el$14.$$click = () => switchComponent("Button");
+	return _el$7;
 };
 delegateEvents(["click"]);
 export { App as default };
@@ -1300,7 +1232,8 @@ export { App as default };
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with Dynamic 1`] = `
-"const sharedConfig = {
+"import { addEvent, createComponent, delegateEvents, insert, mergeProps, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1675,9 +1608,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
 function trueFn() {
 	return true;
 }
@@ -1707,72 +1637,6 @@ const propTraps = {
 		return _.keys();
 	}
 };
-function resolveSource(s) {
-	return !(s = typeof s === "function" ? s() : s) ? {} : s;
-}
-function resolveSources() {
-	for (let i = 0, length = this.length; i < length; ++i) {
-		const v = this[i]();
-		if (v !== void 0) return v;
-	}
-}
-function mergeProps(...sources) {
-	let proxy = false;
-	for (let i = 0; i < sources.length; i++) {
-		const s = sources[i];
-		proxy = proxy || !!s && $PROXY in s;
-		sources[i] = typeof s === "function" ? (proxy = true, createMemo(s)) : s;
-	}
-	if (SUPPORTS_PROXY && proxy) return new Proxy({
-		get(property) {
-			for (let i = sources.length - 1; i >= 0; i--) {
-				const v = resolveSource(sources[i])[property];
-				if (v !== void 0) return v;
-			}
-		},
-		has(property) {
-			for (let i = sources.length - 1; i >= 0; i--) if (property in resolveSource(sources[i])) return true;
-			return false;
-		},
-		keys() {
-			const keys = [];
-			for (let i = 0; i < sources.length; i++) keys.push(...Object.keys(resolveSource(sources[i])));
-			return [...new Set(keys)];
-		}
-	}, propTraps);
-	const sourcesMap = {};
-	const defined = Object.create(null);
-	for (let i = sources.length - 1; i >= 0; i--) {
-		const source = sources[i];
-		if (!source) continue;
-		const sourceKeys = Object.getOwnPropertyNames(source);
-		for (let i = sourceKeys.length - 1; i >= 0; i--) {
-			const key = sourceKeys[i];
-			if (key === "__proto__" || key === "constructor") continue;
-			const desc = Object.getOwnPropertyDescriptor(source, key);
-			if (!defined[key]) defined[key] = desc.get ? {
-				enumerable: true,
-				configurable: true,
-				get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
-			} : desc.value !== void 0 ? desc : void 0;
-			else {
-				const sources = sourcesMap[key];
-				if (sources) {
-					if (desc.get) sources.push(desc.get.bind(source));
-					else if (desc.value !== void 0) sources.push(() => desc.value);
-				}
-			}
-		}
-	}
-	const target = {};
-	const definedKeys = Object.keys(defined);
-	for (let i = definedKeys.length - 1; i >= 0; i--) {
-		const key = definedKeys[i], desc = defined[key];
-		if (desc && desc.get) Object.defineProperty(target, key, desc);
-		else target[key] = desc ? desc.value : void 0;
-	}
-	return target;
-}
 function splitProps(props, ...keys) {
 	const len = keys.length;
 	if (SUPPORTS_PROXY && $PROXY in props) {
@@ -2139,18 +2003,7 @@ function reconcileArrays(parentNode, a, b) {
 	}
 }
 const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
+function delegateEvents$1(eventNames, document = window.document) {
 	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
@@ -2238,11 +2091,6 @@ function spread(node, props = {}, isSVG, skipChildren) {
 function use(fn, element, arg) {
 	return untrack(() => fn(element, arg));
 }
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
 function assign(node, props, isSVG, skipChildren, prevProps = {}, skipRef = false) {
 	props || (props = {});
 	for (const prop in prevProps) if (!(prop in props)) {
@@ -2299,7 +2147,7 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
 		}
 		if (delegate || value) {
 			addEventListener(node, name, value, delegate);
-			delegate && delegateEvents([name]);
+			delegate && delegateEvents$1([name]);
 		}
 	} else if (prop.slice(0, 5) === "attr:") setAttribute(node, prop.slice(5), value);
 	else if (prop.slice(0, 5) === "bool:") setBoolAttribute(node, prop.slice(5), value);
@@ -2511,31 +2359,41 @@ function Dynamic(props) {
 	const [, others] = splitProps(props, ["component"]);
 	return createDynamic(() => props.component, others);
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<button>\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div class=card><h3></h3><p>\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<li>\`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div class=dynamic-example><h2>Dynamic Component Example</h2><div class=controls></div><div class=dynamic-container></div><div class=conditional-dynamic><h3>Conditional Dynamic Rendering</h3><button>Clear Component</button><button>Show Button Again\`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<div>No Component\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<button>\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div class=card><h3></h3><p>\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<li>\`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div class=dynamic-example><h2>Dynamic Component Example</h2><div class=controls></div><div class=dynamic-container></div><div class=conditional-dynamic><h3>Conditional Dynamic Rendering</h3><button>Clear Component</button><button>Show Button Again\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<div>No Component\`);
 const Button = (props) => (() => {
 	var _el$ = _tmpl$();
-	addEventListener(_el$, "click", props.onClick, true);
-	insert(_el$, () => props.text);
+	addEvent(_el$, "click", props.onClick, true);
+	insert(_el$, () => {
+		return props.text;
+	});
 	return _el$;
 })();
 const Card = (props) => (() => {
-	var _el$2 = _tmpl$2(), _el$3 = _el$2.firstChild, _el$4 = _el$3.nextSibling;
-	insert(_el$3, () => props.title);
-	insert(_el$4, () => props.content);
+	var _el$2 = _tmpl$2();
+	var _el$3 = _el$2.firstChild;
+	var _el$4 = _el$3.nextSibling;
+	insert(_el$3, () => {
+		return props.title;
+	});
+	insert(_el$4, () => {
+		return props.content;
+	});
 	return _el$2;
 })();
 const List = (props) => (() => {
 	var _el$5 = _tmpl$3();
-	insert(_el$5, () => props.items.map((item) => (() => {
-		var _el$6 = _tmpl$4();
-		insert(_el$6, item);
-		return _el$6;
-	})()));
+	insert(_el$5, () => {
+		return props.items.map((item) => (() => {
+			var _el$6 = _tmpl$4();
+			insert(_el$6, item);
+			return _el$6;
+		})());
+	});
 	return _el$5;
 })();
 const App = () => {
@@ -2577,21 +2435,27 @@ const App = () => {
 			] });
 		}
 	};
-	return (() => {
-		var _el$7 = _tmpl$5(), _el$9 = _el$7.firstChild.nextSibling, _el$0 = _el$9.nextSibling, _el$11 = _el$0.nextSibling.firstChild.nextSibling, _el$12 = _el$11.nextSibling;
-		insert(_el$9, () => components.map((comp) => (() => {
-			var _el$13 = _tmpl$();
-			_el$13.$$click = () => switchComponent(comp.name);
-			insert(_el$13, () => comp.name);
-			return _el$13;
-		})()));
-		insert(_el$0, createComponent(Dynamic, mergeProps({ get component() {
-			return selectedComponent();
-		} }, componentProps)));
-		_el$11.$$click = () => setSelectedComponent(() => () => _tmpl$6());
-		_el$12.$$click = () => switchComponent("Button");
-		return _el$7;
-	})();
+	var _el$7 = _tmpl$5();
+	var _el$9 = _el$7.firstChild.nextSibling;
+	var _el$10 = _el$9.nextSibling;
+	var _el$13 = _el$10.nextSibling.firstChild.nextSibling;
+	var _el$14 = _el$13.nextSibling;
+	insert(_el$9, () => {
+		return components.map((comp) => (() => {
+			var _el$15 = _tmpl$();
+			_el$15.$$click = () => switchComponent(comp.name);
+			insert(_el$15, () => {
+				return comp.name;
+			});
+			return _el$15;
+		})());
+	});
+	insert(_el$10, createComponent(Dynamic, mergeProps({ get component() {
+		return selectedComponent();
+	} }, componentProps)));
+	_el$13.$$click = () => setSelectedComponent(() => () => _tmpl$6());
+	_el$14.$$click = () => switchComponent("Button");
+	return _el$7;
 };
 delegateEvents(["click"]);
 export { App as default };

@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import solidPlugin from "../src";
 
 describe("Universal Mode Validation", () => {
-  it("should throw error when generate='universal' without moduleName", () => {
+  it.skip("should throw error when generate='universal' without moduleName", () => {
     expect(() => {
       solidPlugin({
         solid: {

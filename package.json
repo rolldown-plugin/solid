@@ -26,7 +26,7 @@
     "lint": "biome check",
     "prepublishOnly": "bun run build",
     "pretest": "bun run build",
-    "test": "bun test --coverage",
+    "test": "bun test --dots",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

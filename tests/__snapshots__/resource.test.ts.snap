@@ -1,7 +1,8 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform component with Resource 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, insert, memo, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -611,7 +612,7 @@ function createProvider(id, options) {
 		return res;
 	};
 }
-function createComponent(Comp, props) {
+function createComponent$1(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
 const SuspenseListContext = /* #__PURE__ */ createContext();
@@ -654,7 +655,7 @@ function Suspense(props) {
 	if (listContext) show = listContext.register(store.inFallback);
 	let dispose;
 	onCleanup(() => dispose && dispose());
-	return createComponent(SuspenseContext.Provider, {
+	return createComponent$1(SuspenseContext.Provider, {
 		value: store,
 		get children() {
 			return createMemo(() => {
@@ -694,266 +695,21 @@ function Suspense(props) {
 		}
 	});
 }
-const memo = (fn) => createMemo(() => fn());
-function reconcileArrays(parentNode, a, b) {
-	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
-	while (aStart < aEnd || bStart < bEnd) {
-		if (a[aStart] === b[bStart]) {
-			aStart++;
-			bStart++;
-			continue;
-		}
-		while (a[aEnd - 1] === b[bEnd - 1]) {
-			aEnd--;
-			bEnd--;
-		}
-		if (aEnd === aStart) {
-			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
-			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
-		} else if (bEnd === bStart) while (aStart < aEnd) {
-			if (!map || !map.has(a[aStart])) a[aStart].remove();
-			aStart++;
-		}
-		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
-			const node = a[--aEnd].nextSibling;
-			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
-			parentNode.insertBefore(b[--bEnd], node);
-			a[aEnd] = b[bEnd];
-		} else {
-			if (!map) {
-				map = /* @__PURE__ */ new Map();
-				let i = bStart;
-				while (i < bEnd) map.set(b[i], i++);
-			}
-			const index = map.get(a[aStart]);
-			if (index != null) {
-				if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-				} else aStart++;
-			} else a[aStart++].remove();
-		}
-	}
-}
-const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
-}
-function insertExpression(parent, value, current, marker, unwrapArray) {
-	const hydrating = isHydrating(parent);
-	if (hydrating) {
-		!current && (current = [...parent.childNodes]);
-		let cleaned = [];
-		for (let i = 0; i < current.length; i++) {
-			const node = current[i];
-			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
-			else cleaned.push(node);
-		}
-		current = cleaned;
-	}
-	while (typeof current === "function") current = current();
-	if (value === current) return current;
-	const t = typeof value, multi = marker !== void 0;
-	parent = multi && current[0] && current[0].parentNode || parent;
-	if (t === "string" || t === "number") {
-		if (hydrating) return current;
-		if (t === "number") {
-			value = value.toString();
-			if (value === current) return current;
-		}
-		if (multi) {
-			let node = current[0];
-			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
-			else node = document.createTextNode(value);
-			current = cleanChildren(parent, current, marker, node);
-		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
-		else current = parent.textContent = value;
-	} else if (value == null || t === "boolean") {
-		if (hydrating) return current;
-		current = cleanChildren(parent, current, marker);
-	} else if (t === "function") {
-		createRenderEffect(() => {
-			let v = value();
-			while (typeof v === "function") v = v();
-			current = insertExpression(parent, v, current, marker);
-		});
-		return () => current;
-	} else if (Array.isArray(value)) {
-		const array = [];
-		const currentArray = current && Array.isArray(current);
-		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
-			return () => current;
-		}
-		if (hydrating) {
-			if (!array.length) return current;
-			if (marker === void 0) return current = [...parent.childNodes];
-			let node = array[0];
-			if (node.parentNode !== parent) return current;
-			const nodes = [node];
-			while ((node = node.nextSibling) !== marker) nodes.push(node);
-			return current = nodes;
-		}
-		if (array.length === 0) {
-			current = cleanChildren(parent, current, marker);
-			if (multi) return current;
-		} else if (currentArray) {
-			if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-		} else {
-			current && cleanChildren(parent);
-			appendNodes(parent, array);
-		}
-		current = array;
-	} else if (value.nodeType) {
-		if (hydrating && value.parentNode) return current = multi ? [value] : value;
-		if (Array.isArray(current)) {
-			if (multi) return current = cleanChildren(parent, current, marker, value);
-			cleanChildren(parent, current, null, value);
-		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
-		else parent.replaceChild(value, parent.firstChild);
-		current = value;
-	}
-	return current;
-}
-function normalizeIncomingArray(normalized, array, current, unwrap) {
-	let dynamic = false;
-	for (let i = 0, len = array.length; i < len; i++) {
-		let item = array[i], prev = current && current[normalized.length], t;
-		if (item == null || item === true || item === false);
-		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
-		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") {
-			if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-		} else {
-			const value = String(item);
-			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
-			else normalized.push(document.createTextNode(value));
-		}
-	}
-	return dynamic;
-}
-function appendNodes(parent, array, marker = null) {
-	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
-}
-function cleanChildren(parent, current, marker, replacement) {
-	if (marker === void 0) return parent.textContent = "";
-	const node = replacement || document.createTextNode("");
-	if (current.length) {
-		let inserted = false;
-		for (let i = current.length - 1; i >= 0; i--) {
-			const el = current[i];
-			if (node !== el) {
-				const isParent = el.parentNode === parent;
-				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
-				else isParent && el.remove();
-			} else inserted = true;
-		}
-	} else parent.insertBefore(node, marker);
-	return [node];
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>User Info</h3><button>Refresh User</button><button>Mutate User\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div>Loading user...\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<div><p>ID: </p><p>Name: </p><p>Email: \`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Posts</h3><button>Load Posts\`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div>Loading posts...\`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<ul>\`);
-var _tmpl$7 = /*#__PURE__*/ template(\`<li> (User ID: <!>)\`);
-var _tmpl$8 = /*#__PURE__*/ template(\`<button>Refresh Posts\`);
-var _tmpl$9 = /*#__PURE__*/ template(\`<div><h4>Comments for Post </h4><button>Refresh Comments\`);
-var _tmpl$0 = /*#__PURE__*/ template(\`<div>Loading comments...\`);
-var _tmpl$1 = /*#__PURE__*/ template(\`<p>No comments yet\`);
-var _tmpl$10 = /*#__PURE__*/ template(\`<div><h2>createResource Demo</h2><div><h3>User Selection</h3><button>User 1</button><button>User 2</button><button>Invalid User</button></div><div style=margin-top:2rem></div><div style=margin-top:2rem></div><div style=margin-top:2rem><h3>Comments Selection</h3><button>Post 1 Comments</button><button>Post 2 Comments</button><button>Post 3 Comments\`);
-var _tmpl$11 = /*#__PURE__*/ template(\`<div>Loading selected user...\`);
-var _tmpl$12 = /*#__PURE__*/ template(\`<div><p>Selected: </p><p>Email: \`);
-var _tmpl$13 = /*#__PURE__*/ template(\`<div>Loading comments section...\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>User Info</h3><button>Refresh User</button><button>Mutate User\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div>Loading user...\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<div><p>ID: </p><p>Name: </p><p>Email: \`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Posts</h3><button>Load Posts</button><!><!>\`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div>Loading posts...\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<ul>\`);
+var _tmpl$7 = /* @__PURE__ */ template(\`<li> (User ID: <!>)\`);
+var _tmpl$8 = /* @__PURE__ */ template(\`<button>Refresh Posts\`);
+var _tmpl$9 = /* @__PURE__ */ template(\`<div><h4>Comments for Post </h4><button>Refresh Comments\`);
+var _tmpl$10 = /* @__PURE__ */ template(\`<div>Loading comments...\`);
+var _tmpl$11 = /* @__PURE__ */ template(\`<p>No comments yet\`);
+var _tmpl$12 = /* @__PURE__ */ template(\`<div><h2>createResource Demo</h2><div><h3>User Selection</h3><button>User 1</button><button>User 2</button><button>Invalid User</button></div><div style=margin-top:2rem></div><div style=margin-top:2rem></div><div style=margin-top:2rem><h3>Comments Selection</h3><button>Post 1 Comments</button><button>Post 2 Comments</button><button>Post 3 Comments\`);
+var _tmpl$13 = /* @__PURE__ */ template(\`<div>Loading selected user...\`);
+var _tmpl$14 = /* @__PURE__ */ template(\`<div><p>Selected: </p><p>Email: \`);
+var _tmpl$15 = /* @__PURE__ */ template(\`<div>Loading comments section...\`);
 const fetchUser = async (id) => {
 	await new Promise((resolve) => setTimeout(resolve, 1e3));
 	if (id === 1) return {
@@ -1005,99 +761,134 @@ const fetchComments = async (postId) => {
 const UserComponent = () => {
 	const [userId] = createSignal(1);
 	const [user, { mutate, refetch }] = createResource(userId, fetchUser);
-	return (() => {
-		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.nextSibling;
-		insert(_el$, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$2();
-			},
-			get children() {
-				return memo(() => !!user())() && (() => {
-					var _el$6 = _tmpl$3(), _el$7 = _el$6.firstChild;
-					_el$7.firstChild;
-					var _el$9 = _el$7.nextSibling;
-					_el$9.firstChild;
-					var _el$1 = _el$9.nextSibling;
-					_el$1.firstChild;
-					insert(_el$7, () => user().id, null);
-					insert(_el$9, () => user().name, null);
-					insert(_el$1, () => user().email, null);
-					return _el$6;
-				})();
-			}
-		}), _el$3);
-		_el$3.$$click = () => refetch();
-		_el$4.$$click = () => mutate({
-			id: 999,
-			name: "Mutated",
-			email: "mutated@example.com"
-		});
-		return _el$;
-	})();
+	var _el$ = _tmpl$();
+	var _el$3 = _el$.firstChild.nextSibling;
+	var _el$4 = _el$3.nextSibling;
+	insert(_el$, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$2();
+		},
+		get children() {
+			return memo(() => {
+				return !!user();
+			})() ? (() => {
+				var _el$6 = _tmpl$3();
+				var _el$7 = _el$6.firstChild;
+				_el$7.firstChild;
+				var _el$9 = _el$7.nextSibling;
+				_el$9.firstChild;
+				var _el$11 = _el$9.nextSibling;
+				_el$11.firstChild;
+				insert(_el$7, () => {
+					return user().id;
+				}, null);
+				insert(_el$9, () => {
+					return user().name;
+				}, null);
+				insert(_el$11, () => {
+					return user().email;
+				}, null);
+				return _el$6;
+			})() : user();
+		}
+	}), _el$3);
+	_el$3.$$click = () => refetch();
+	_el$4.$$click = () => mutate({
+		id: 999,
+		name: "Mutated",
+		email: "mutated@example.com"
+	});
+	return _el$;
 };
 const PostsComponent = () => {
 	const [shouldLoad, setShouldLoad] = createSignal(false);
 	const [posts, { refetch }] = createResource(shouldLoad, fetchPosts);
-	return (() => {
-		var _el$11 = _tmpl$4(), _el$13 = _el$11.firstChild.nextSibling;
-		_el$13.$$click = () => setShouldLoad(true);
-		insert(_el$11, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$5();
-			},
-			get children() {
-				return memo(() => !!posts())() && (() => {
-					var _el$15 = _tmpl$6();
-					insert(_el$15, () => posts().map((post) => (() => {
-						var _el$16 = _tmpl$7(), _el$17 = _el$16.firstChild, _el$19 = _el$17.nextSibling;
-						_el$19.nextSibling;
-						insert(_el$16, () => post.title, _el$17);
-						insert(_el$16, () => post.userId, _el$19);
-						return _el$16;
-					})()));
-					return _el$15;
-				})();
-			}
-		}), null);
-		insert(_el$11, (() => {
-			var _c$ = memo(() => !!shouldLoad());
-			return () => _c$() && (() => {
-				var _el$20 = _tmpl$8();
-				_el$20.$$click = () => refetch();
-				return _el$20;
-			})();
-		})(), null);
-		return _el$11;
-	})();
+	var _el$13 = _tmpl$4();
+	var _el$15 = _el$13.firstChild.nextSibling;
+	var _el$16 = _el$15.nextSibling;
+	var _el$17 = _el$16.nextSibling;
+	_el$15.$$click = () => setShouldLoad(true);
+	insert(_el$13, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$5();
+		},
+		get children() {
+			return memo(() => {
+				return !!posts();
+			})() ? (() => {
+				var _el$19 = _tmpl$6();
+				insert(_el$19, () => {
+					return posts().map((post) => (() => {
+						var _el$20 = _tmpl$7();
+						var _el$21 = _el$20.firstChild;
+						var _el$22 = _el$21.nextSibling;
+						_el$22.nextSibling;
+						insert(_el$20, () => {
+							return post.title;
+						}, _el$21);
+						insert(_el$20, () => {
+							return post.userId;
+						}, _el$22);
+						return _el$20;
+					})());
+				});
+				return _el$19;
+			})() : posts();
+		}
+	}), _el$16);
+	insert(_el$13, (() => {
+		var _c$ = memo(() => {
+			return !!shouldLoad();
+		});
+		return () => {
+			return _c$() ? (() => {
+				var _el$24 = _tmpl$8();
+				_el$24.$$click = () => refetch();
+				return _el$24;
+			})() : shouldLoad();
+		};
+	})(), _el$17);
+	return _el$13;
 };
 const CommentsComponent = (props) => {
 	const [comments, { refetch }] = createResource(() => props.postId, fetchComments, { initialValue: [] });
-	return (() => {
-		var _el$21 = _tmpl$9(), _el$22 = _el$21.firstChild;
-		_el$22.firstChild;
-		var _el$24 = _el$22.nextSibling;
-		insert(_el$22, () => props.postId, null);
-		_el$24.$$click = () => refetch();
-		insert(_el$21, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$0();
-			},
-			get children() {
-				return memo(() => !!(comments() && comments().length > 0))() ? (() => {
-					var _el$26 = _tmpl$6();
-					insert(_el$26, () => comments().map((comment) => (() => {
-						var _el$27 = _tmpl$7(), _el$28 = _el$27.firstChild, _el$30 = _el$28.nextSibling;
-						_el$30.nextSibling;
-						insert(_el$27, () => comment.text, _el$28);
-						insert(_el$27, () => comment.userId, _el$30);
-						return _el$27;
-					})()));
-					return _el$26;
-				})() : _tmpl$1();
-			}
-		}), null);
-		return _el$21;
-	})();
+	var _el$25 = _tmpl$9();
+	var _el$26 = _el$25.firstChild;
+	_el$26.firstChild;
+	var _el$28 = _el$26.nextSibling;
+	insert(_el$26, () => {
+		return props.postId;
+	}, null);
+	_el$28.$$click = () => refetch();
+	insert(_el$25, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$10();
+		},
+		get children() {
+			return memo(() => {
+				return !!(comments() && comments().length > 0);
+			})() ? (() => {
+				var _el$30 = _tmpl$6();
+				insert(_el$30, () => {
+					return comments().map((comment) => (() => {
+						var _el$32 = _tmpl$7();
+						var _el$33 = _el$32.firstChild;
+						var _el$34 = _el$33.nextSibling;
+						_el$34.nextSibling;
+						insert(_el$32, () => {
+							return comment.text;
+						}, _el$33);
+						insert(_el$32, () => {
+							return comment.userId;
+						}, _el$34);
+						return _el$32;
+					})());
+				});
+				return _el$30;
+			})() : _tmpl$11();
+		}
+	}), null);
+	return _el$25;
 };
 const ResourceDemo = () => {
 	const [selectedUserId, setSelectedUserId] = createSignal(1);
@@ -1107,44 +898,59 @@ const ResourceDemo = () => {
 		name: "Loading...",
 		email: ""
 	} });
-	return (() => {
-		var _el$32 = _tmpl$10(), _el$34 = _el$32.firstChild.nextSibling, _el$36 = _el$34.firstChild.nextSibling, _el$37 = _el$36.nextSibling, _el$38 = _el$37.nextSibling, _el$39 = _el$34.nextSibling, _el$40 = _el$39.nextSibling, _el$41 = _el$40.nextSibling, _el$43 = _el$41.firstChild.nextSibling, _el$44 = _el$43.nextSibling, _el$45 = _el$44.nextSibling;
-		_el$36.$$click = () => setSelectedUserId(1);
-		_el$37.$$click = () => setSelectedUserId(2);
-		_el$38.$$click = () => setSelectedUserId(999);
-		insert(_el$34, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$11();
-			},
-			get children() {
-				return memo(() => !!user())() && (() => {
-					var _el$47 = _tmpl$12(), _el$48 = _el$47.firstChild;
-					_el$48.firstChild;
-					var _el$50 = _el$48.nextSibling;
-					_el$50.firstChild;
-					insert(_el$48, () => user().name, null);
-					insert(_el$50, () => user().email, null);
-					return _el$47;
-				})();
-			}
-		}), null);
-		insert(_el$39, createComponent(UserComponent, {}));
-		insert(_el$40, createComponent(PostsComponent, {}));
-		_el$43.$$click = () => setSelectedPostId(1);
-		_el$44.$$click = () => setSelectedPostId(2);
-		_el$45.$$click = () => setSelectedPostId(3);
-		insert(_el$41, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$13();
-			},
-			get children() {
-				return createComponent(CommentsComponent, { get postId() {
-					return selectedPostId();
-				} });
-			}
-		}), null);
-		return _el$32;
-	})();
+	var _el$36 = _tmpl$12();
+	var _el$38 = _el$36.firstChild.nextSibling;
+	var _el$40 = _el$38.firstChild.nextSibling;
+	var _el$41 = _el$40.nextSibling;
+	var _el$42 = _el$41.nextSibling;
+	var _el$43 = _el$38.nextSibling;
+	var _el$44 = _el$43.nextSibling;
+	var _el$45 = _el$44.nextSibling;
+	var _el$47 = _el$45.firstChild.nextSibling;
+	var _el$48 = _el$47.nextSibling;
+	var _el$49 = _el$48.nextSibling;
+	_el$40.$$click = () => setSelectedUserId(1);
+	_el$41.$$click = () => setSelectedUserId(2);
+	_el$42.$$click = () => setSelectedUserId(999);
+	insert(_el$38, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$13();
+		},
+		get children() {
+			return memo(() => {
+				return !!user();
+			})() ? (() => {
+				var _el$51 = _tmpl$14();
+				var _el$52 = _el$51.firstChild;
+				_el$52.firstChild;
+				var _el$54 = _el$52.nextSibling;
+				_el$54.firstChild;
+				insert(_el$52, () => {
+					return user().name;
+				}, null);
+				insert(_el$54, () => {
+					return user().email;
+				}, null);
+				return _el$51;
+			})() : user();
+		}
+	}), null);
+	insert(_el$43, createComponent(UserComponent, {}));
+	insert(_el$44, createComponent(PostsComponent, {}));
+	_el$47.$$click = () => setSelectedPostId(1);
+	_el$48.$$click = () => setSelectedPostId(2);
+	_el$49.$$click = () => setSelectedPostId(3);
+	insert(_el$45, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$15();
+		},
+		get children() {
+			return createComponent(CommentsComponent, { get postId() {
+				return selectedPostId();
+			} });
+		}
+	}), null);
+	return _el$36;
 };
 delegateEvents(["click"]);
 export { ResourceDemo as default };
@@ -1152,7 +958,8 @@ export { ResourceDemo as default };
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with Resource 1`] = `
-"const sharedConfig = {
+"import { createComponent, delegateEvents, insert, memo, template } from "@solidjs/web";
+const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1762,7 +1569,7 @@ function createProvider(id, options) {
 		return res;
 	};
 }
-function createComponent(Comp, props) {
+function createComponent$1(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
 const SuspenseListContext = /* #__PURE__ */ createContext();
@@ -1805,7 +1612,7 @@ function Suspense(props) {
 	if (listContext) show = listContext.register(store.inFallback);
 	let dispose;
 	onCleanup(() => dispose && dispose());
-	return createComponent(SuspenseContext.Provider, {
+	return createComponent$1(SuspenseContext.Provider, {
 		value: store,
 		get children() {
 			return createMemo(() => {
@@ -1845,266 +1652,21 @@ function Suspense(props) {
 		}
 	});
 }
-const memo = (fn) => createMemo(() => fn());
-function reconcileArrays(parentNode, a, b) {
-	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
-	while (aStart < aEnd || bStart < bEnd) {
-		if (a[aStart] === b[bStart]) {
-			aStart++;
-			bStart++;
-			continue;
-		}
-		while (a[aEnd - 1] === b[bEnd - 1]) {
-			aEnd--;
-			bEnd--;
-		}
-		if (aEnd === aStart) {
-			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
-			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
-		} else if (bEnd === bStart) while (aStart < aEnd) {
-			if (!map || !map.has(a[aStart])) a[aStart].remove();
-			aStart++;
-		}
-		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
-			const node = a[--aEnd].nextSibling;
-			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
-			parentNode.insertBefore(b[--bEnd], node);
-			a[aEnd] = b[bEnd];
-		} else {
-			if (!map) {
-				map = /* @__PURE__ */ new Map();
-				let i = bStart;
-				while (i < bEnd) map.set(b[i], i++);
-			}
-			const index = map.get(a[aStart]);
-			if (index != null) {
-				if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-				} else aStart++;
-			} else a[aStart++].remove();
-		}
-	}
-}
-const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
-}
-function insertExpression(parent, value, current, marker, unwrapArray) {
-	const hydrating = isHydrating(parent);
-	if (hydrating) {
-		!current && (current = [...parent.childNodes]);
-		let cleaned = [];
-		for (let i = 0; i < current.length; i++) {
-			const node = current[i];
-			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
-			else cleaned.push(node);
-		}
-		current = cleaned;
-	}
-	while (typeof current === "function") current = current();
-	if (value === current) return current;
-	const t = typeof value, multi = marker !== void 0;
-	parent = multi && current[0] && current[0].parentNode || parent;
-	if (t === "string" || t === "number") {
-		if (hydrating) return current;
-		if (t === "number") {
-			value = value.toString();
-			if (value === current) return current;
-		}
-		if (multi) {
-			let node = current[0];
-			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
-			else node = document.createTextNode(value);
-			current = cleanChildren(parent, current, marker, node);
-		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
-		else current = parent.textContent = value;
-	} else if (value == null || t === "boolean") {
-		if (hydrating) return current;
-		current = cleanChildren(parent, current, marker);
-	} else if (t === "function") {
-		createRenderEffect(() => {
-			let v = value();
-			while (typeof v === "function") v = v();
-			current = insertExpression(parent, v, current, marker);
-		});
-		return () => current;
-	} else if (Array.isArray(value)) {
-		const array = [];
-		const currentArray = current && Array.isArray(current);
-		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
-			return () => current;
-		}
-		if (hydrating) {
-			if (!array.length) return current;
-			if (marker === void 0) return current = [...parent.childNodes];
-			let node = array[0];
-			if (node.parentNode !== parent) return current;
-			const nodes = [node];
-			while ((node = node.nextSibling) !== marker) nodes.push(node);
-			return current = nodes;
-		}
-		if (array.length === 0) {
-			current = cleanChildren(parent, current, marker);
-			if (multi) return current;
-		} else if (currentArray) {
-			if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-		} else {
-			current && cleanChildren(parent);
-			appendNodes(parent, array);
-		}
-		current = array;
-	} else if (value.nodeType) {
-		if (hydrating && value.parentNode) return current = multi ? [value] : value;
-		if (Array.isArray(current)) {
-			if (multi) return current = cleanChildren(parent, current, marker, value);
-			cleanChildren(parent, current, null, value);
-		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
-		else parent.replaceChild(value, parent.firstChild);
-		current = value;
-	}
-	return current;
-}
-function normalizeIncomingArray(normalized, array, current, unwrap) {
-	let dynamic = false;
-	for (let i = 0, len = array.length; i < len; i++) {
-		let item = array[i], prev = current && current[normalized.length], t;
-		if (item == null || item === true || item === false);
-		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
-		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") {
-			if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-		} else {
-			const value = String(item);
-			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
-			else normalized.push(document.createTextNode(value));
-		}
-	}
-	return dynamic;
-}
-function appendNodes(parent, array, marker = null) {
-	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
-}
-function cleanChildren(parent, current, marker, replacement) {
-	if (marker === void 0) return parent.textContent = "";
-	const node = replacement || document.createTextNode("");
-	if (current.length) {
-		let inserted = false;
-		for (let i = current.length - 1; i >= 0; i--) {
-			const el = current[i];
-			if (node !== el) {
-				const isParent = el.parentNode === parent;
-				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
-				else isParent && el.remove();
-			} else inserted = true;
-		}
-	} else parent.insertBefore(node, marker);
-	return [node];
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>User Info</h3><button>Refresh User</button><button>Mutate User\`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div>Loading user...\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<div><p>ID: </p><p>Name: </p><p>Email: \`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Posts</h3><button>Load Posts\`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div>Loading posts...\`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<ul>\`);
-var _tmpl$7 = /*#__PURE__*/ template(\`<li> (User ID: <!>)\`);
-var _tmpl$8 = /*#__PURE__*/ template(\`<button>Refresh Posts\`);
-var _tmpl$9 = /*#__PURE__*/ template(\`<div><h4>Comments for Post </h4><button>Refresh Comments\`);
-var _tmpl$0 = /*#__PURE__*/ template(\`<div>Loading comments...\`);
-var _tmpl$1 = /*#__PURE__*/ template(\`<p>No comments yet\`);
-var _tmpl$10 = /*#__PURE__*/ template(\`<div><h2>createResource Demo</h2><div><h3>User Selection</h3><button>User 1</button><button>User 2</button><button>Invalid User</button></div><div style=margin-top:2rem></div><div style=margin-top:2rem></div><div style=margin-top:2rem><h3>Comments Selection</h3><button>Post 1 Comments</button><button>Post 2 Comments</button><button>Post 3 Comments\`);
-var _tmpl$11 = /*#__PURE__*/ template(\`<div>Loading selected user...\`);
-var _tmpl$12 = /*#__PURE__*/ template(\`<div><p>Selected: </p><p>Email: \`);
-var _tmpl$13 = /*#__PURE__*/ template(\`<div>Loading comments section...\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>User Info</h3><button>Refresh User</button><button>Mutate User\`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div>Loading user...\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<div><p>ID: </p><p>Name: </p><p>Email: \`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Posts</h3><button>Load Posts</button><!><!>\`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div>Loading posts...\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<ul>\`);
+var _tmpl$7 = /* @__PURE__ */ template(\`<li> (User ID: <!>)\`);
+var _tmpl$8 = /* @__PURE__ */ template(\`<button>Refresh Posts\`);
+var _tmpl$9 = /* @__PURE__ */ template(\`<div><h4>Comments for Post </h4><button>Refresh Comments\`);
+var _tmpl$10 = /* @__PURE__ */ template(\`<div>Loading comments...\`);
+var _tmpl$11 = /* @__PURE__ */ template(\`<p>No comments yet\`);
+var _tmpl$12 = /* @__PURE__ */ template(\`<div><h2>createResource Demo</h2><div><h3>User Selection</h3><button>User 1</button><button>User 2</button><button>Invalid User</button></div><div style=margin-top:2rem></div><div style=margin-top:2rem></div><div style=margin-top:2rem><h3>Comments Selection</h3><button>Post 1 Comments</button><button>Post 2 Comments</button><button>Post 3 Comments\`);
+var _tmpl$13 = /* @__PURE__ */ template(\`<div>Loading selected user...\`);
+var _tmpl$14 = /* @__PURE__ */ template(\`<div><p>Selected: </p><p>Email: \`);
+var _tmpl$15 = /* @__PURE__ */ template(\`<div>Loading comments section...\`);
 const fetchUser = async (id) => {
 	await new Promise((resolve) => setTimeout(resolve, 1e3));
 	if (id === 1) return {
@@ -2156,99 +1718,134 @@ const fetchComments = async (postId) => {
 const UserComponent = () => {
 	const [userId] = createSignal(1);
 	const [user, { mutate, refetch }] = createResource(userId, fetchUser);
-	return (() => {
-		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.nextSibling;
-		insert(_el$, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$2();
-			},
-			get children() {
-				return memo(() => !!user())() && (() => {
-					var _el$6 = _tmpl$3(), _el$7 = _el$6.firstChild;
-					_el$7.firstChild;
-					var _el$9 = _el$7.nextSibling;
-					_el$9.firstChild;
-					var _el$1 = _el$9.nextSibling;
-					_el$1.firstChild;
-					insert(_el$7, () => user().id, null);
-					insert(_el$9, () => user().name, null);
-					insert(_el$1, () => user().email, null);
-					return _el$6;
-				})();
-			}
-		}), _el$3);
-		_el$3.$$click = () => refetch();
-		_el$4.$$click = () => mutate({
-			id: 999,
-			name: "Mutated",
-			email: "mutated@example.com"
-		});
-		return _el$;
-	})();
+	var _el$ = _tmpl$();
+	var _el$3 = _el$.firstChild.nextSibling;
+	var _el$4 = _el$3.nextSibling;
+	insert(_el$, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$2();
+		},
+		get children() {
+			return memo(() => {
+				return !!user();
+			})() ? (() => {
+				var _el$6 = _tmpl$3();
+				var _el$7 = _el$6.firstChild;
+				_el$7.firstChild;
+				var _el$9 = _el$7.nextSibling;
+				_el$9.firstChild;
+				var _el$11 = _el$9.nextSibling;
+				_el$11.firstChild;
+				insert(_el$7, () => {
+					return user().id;
+				}, null);
+				insert(_el$9, () => {
+					return user().name;
+				}, null);
+				insert(_el$11, () => {
+					return user().email;
+				}, null);
+				return _el$6;
+			})() : user();
+		}
+	}), _el$3);
+	_el$3.$$click = () => refetch();
+	_el$4.$$click = () => mutate({
+		id: 999,
+		name: "Mutated",
+		email: "mutated@example.com"
+	});
+	return _el$;
 };
 const PostsComponent = () => {
 	const [shouldLoad, setShouldLoad] = createSignal(false);
 	const [posts, { refetch }] = createResource(shouldLoad, fetchPosts);
-	return (() => {
-		var _el$11 = _tmpl$4(), _el$13 = _el$11.firstChild.nextSibling;
-		_el$13.$$click = () => setShouldLoad(true);
-		insert(_el$11, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$5();
-			},
-			get children() {
-				return memo(() => !!posts())() && (() => {
-					var _el$15 = _tmpl$6();
-					insert(_el$15, () => posts().map((post) => (() => {
-						var _el$16 = _tmpl$7(), _el$17 = _el$16.firstChild, _el$19 = _el$17.nextSibling;
-						_el$19.nextSibling;
-						insert(_el$16, () => post.title, _el$17);
-						insert(_el$16, () => post.userId, _el$19);
-						return _el$16;
-					})()));
-					return _el$15;
-				})();
-			}
-		}), null);
-		insert(_el$11, (() => {
-			var _c$ = memo(() => !!shouldLoad());
-			return () => _c$() && (() => {
-				var _el$20 = _tmpl$8();
-				_el$20.$$click = () => refetch();
-				return _el$20;
-			})();
-		})(), null);
-		return _el$11;
-	})();
+	var _el$13 = _tmpl$4();
+	var _el$15 = _el$13.firstChild.nextSibling;
+	var _el$16 = _el$15.nextSibling;
+	var _el$17 = _el$16.nextSibling;
+	_el$15.$$click = () => setShouldLoad(true);
+	insert(_el$13, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$5();
+		},
+		get children() {
+			return memo(() => {
+				return !!posts();
+			})() ? (() => {
+				var _el$19 = _tmpl$6();
+				insert(_el$19, () => {
+					return posts().map((post) => (() => {
+						var _el$20 = _tmpl$7();
+						var _el$21 = _el$20.firstChild;
+						var _el$22 = _el$21.nextSibling;
+						_el$22.nextSibling;
+						insert(_el$20, () => {
+							return post.title;
+						}, _el$21);
+						insert(_el$20, () => {
+							return post.userId;
+						}, _el$22);
+						return _el$20;
+					})());
+				});
+				return _el$19;
+			})() : posts();
+		}
+	}), _el$16);
+	insert(_el$13, (() => {
+		var _c$ = memo(() => {
+			return !!shouldLoad();
+		});
+		return () => {
+			return _c$() ? (() => {
+				var _el$24 = _tmpl$8();
+				_el$24.$$click = () => refetch();
+				return _el$24;
+			})() : shouldLoad();
+		};
+	})(), _el$17);
+	return _el$13;
 };
 const CommentsComponent = (props) => {
 	const [comments, { refetch }] = createResource(() => props.postId, fetchComments, { initialValue: [] });
-	return (() => {
-		var _el$21 = _tmpl$9(), _el$22 = _el$21.firstChild;
-		_el$22.firstChild;
-		var _el$24 = _el$22.nextSibling;
-		insert(_el$22, () => props.postId, null);
-		_el$24.$$click = () => refetch();
-		insert(_el$21, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$0();
-			},
-			get children() {
-				return memo(() => !!(comments() && comments().length > 0))() ? (() => {
-					var _el$26 = _tmpl$6();
-					insert(_el$26, () => comments().map((comment) => (() => {
-						var _el$27 = _tmpl$7(), _el$28 = _el$27.firstChild, _el$30 = _el$28.nextSibling;
-						_el$30.nextSibling;
-						insert(_el$27, () => comment.text, _el$28);
-						insert(_el$27, () => comment.userId, _el$30);
-						return _el$27;
-					})()));
-					return _el$26;
-				})() : _tmpl$1();
-			}
-		}), null);
-		return _el$21;
-	})();
+	var _el$25 = _tmpl$9();
+	var _el$26 = _el$25.firstChild;
+	_el$26.firstChild;
+	var _el$28 = _el$26.nextSibling;
+	insert(_el$26, () => {
+		return props.postId;
+	}, null);
+	_el$28.$$click = () => refetch();
+	insert(_el$25, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$10();
+		},
+		get children() {
+			return memo(() => {
+				return !!(comments() && comments().length > 0);
+			})() ? (() => {
+				var _el$30 = _tmpl$6();
+				insert(_el$30, () => {
+					return comments().map((comment) => (() => {
+						var _el$32 = _tmpl$7();
+						var _el$33 = _el$32.firstChild;
+						var _el$34 = _el$33.nextSibling;
+						_el$34.nextSibling;
+						insert(_el$32, () => {
+							return comment.text;
+						}, _el$33);
+						insert(_el$32, () => {
+							return comment.userId;
+						}, _el$34);
+						return _el$32;
+					})());
+				});
+				return _el$30;
+			})() : _tmpl$11();
+		}
+	}), null);
+	return _el$25;
 };
 const ResourceDemo = () => {
 	const [selectedUserId, setSelectedUserId] = createSignal(1);
@@ -2258,44 +1855,59 @@ const ResourceDemo = () => {
 		name: "Loading...",
 		email: ""
 	} });
-	return (() => {
-		var _el$32 = _tmpl$10(), _el$34 = _el$32.firstChild.nextSibling, _el$36 = _el$34.firstChild.nextSibling, _el$37 = _el$36.nextSibling, _el$38 = _el$37.nextSibling, _el$39 = _el$34.nextSibling, _el$40 = _el$39.nextSibling, _el$41 = _el$40.nextSibling, _el$43 = _el$41.firstChild.nextSibling, _el$44 = _el$43.nextSibling, _el$45 = _el$44.nextSibling;
-		_el$36.$$click = () => setSelectedUserId(1);
-		_el$37.$$click = () => setSelectedUserId(2);
-		_el$38.$$click = () => setSelectedUserId(999);
-		insert(_el$34, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$11();
-			},
-			get children() {
-				return memo(() => !!user())() && (() => {
-					var _el$47 = _tmpl$12(), _el$48 = _el$47.firstChild;
-					_el$48.firstChild;
-					var _el$50 = _el$48.nextSibling;
-					_el$50.firstChild;
-					insert(_el$48, () => user().name, null);
-					insert(_el$50, () => user().email, null);
-					return _el$47;
-				})();
-			}
-		}), null);
-		insert(_el$39, createComponent(UserComponent, {}));
-		insert(_el$40, createComponent(PostsComponent, {}));
-		_el$43.$$click = () => setSelectedPostId(1);
-		_el$44.$$click = () => setSelectedPostId(2);
-		_el$45.$$click = () => setSelectedPostId(3);
-		insert(_el$41, createComponent(Suspense, {
-			get fallback() {
-				return _tmpl$13();
-			},
-			get children() {
-				return createComponent(CommentsComponent, { get postId() {
-					return selectedPostId();
-				} });
-			}
-		}), null);
-		return _el$32;
-	})();
+	var _el$36 = _tmpl$12();
+	var _el$38 = _el$36.firstChild.nextSibling;
+	var _el$40 = _el$38.firstChild.nextSibling;
+	var _el$41 = _el$40.nextSibling;
+	var _el$42 = _el$41.nextSibling;
+	var _el$43 = _el$38.nextSibling;
+	var _el$44 = _el$43.nextSibling;
+	var _el$45 = _el$44.nextSibling;
+	var _el$47 = _el$45.firstChild.nextSibling;
+	var _el$48 = _el$47.nextSibling;
+	var _el$49 = _el$48.nextSibling;
+	_el$40.$$click = () => setSelectedUserId(1);
+	_el$41.$$click = () => setSelectedUserId(2);
+	_el$42.$$click = () => setSelectedUserId(999);
+	insert(_el$38, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$13();
+		},
+		get children() {
+			return memo(() => {
+				return !!user();
+			})() ? (() => {
+				var _el$51 = _tmpl$14();
+				var _el$52 = _el$51.firstChild;
+				_el$52.firstChild;
+				var _el$54 = _el$52.nextSibling;
+				_el$54.firstChild;
+				insert(_el$52, () => {
+					return user().name;
+				}, null);
+				insert(_el$54, () => {
+					return user().email;
+				}, null);
+				return _el$51;
+			})() : user();
+		}
+	}), null);
+	insert(_el$43, createComponent(UserComponent, {}));
+	insert(_el$44, createComponent(PostsComponent, {}));
+	_el$47.$$click = () => setSelectedPostId(1);
+	_el$48.$$click = () => setSelectedPostId(2);
+	_el$49.$$click = () => setSelectedPostId(3);
+	insert(_el$45, createComponent(Suspense, {
+		get fallback() {
+			return _tmpl$15();
+		},
+		get children() {
+			return createComponent(CommentsComponent, { get postId() {
+				return selectedPostId();
+			} });
+		}
+	}), null);
+	return _el$36;
 };
 delegateEvents(["click"]);
 export { ResourceDemo as default };

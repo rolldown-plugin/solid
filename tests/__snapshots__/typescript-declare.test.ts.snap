@@ -1,22 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform with typescript declare 1`] = `
-"const sharedConfig = {
-	context: void 0,
-	registry: void 0,
-	effects: void 0,
-	done: false,
-	getContextId() {
-		return getContextId(this.context.count);
-	},
-	getNextContextId() {
-		return getContextId(this.context.count++);
-	}
-};
-function getContextId(count) {
-	const num = String(count), len = num.length - 1;
-	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
-}
+"import { createComponent, delegateEvents, effect, insert, setStyleProperty, template } from "@solidjs/web";
 const equalFn = (a, b) => a === b;
 const $TRACK = Symbol("solid-track");
 const signalOptions = { equals: equalFn };
@@ -67,9 +52,6 @@ function createSignal(value, options) {
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
-}
-function createRenderEffect(fn, value, options) {
-	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -486,267 +468,17 @@ function mapArray(list, mapFn, options = {}) {
 		}
 	};
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
 function For(props) {
 	const fallback = "fallback" in props && { fallback: () => props.fallback };
 	return createMemo(mapArray(() => props.each, props.children, fallback || void 0));
 }
-function reconcileArrays(parentNode, a, b) {
-	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
-	while (aStart < aEnd || bStart < bEnd) {
-		if (a[aStart] === b[bStart]) {
-			aStart++;
-			bStart++;
-			continue;
-		}
-		while (a[aEnd - 1] === b[bEnd - 1]) {
-			aEnd--;
-			bEnd--;
-		}
-		if (aEnd === aStart) {
-			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
-			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
-		} else if (bEnd === bStart) while (aStart < aEnd) {
-			if (!map || !map.has(a[aStart])) a[aStart].remove();
-			aStart++;
-		}
-		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
-			const node = a[--aEnd].nextSibling;
-			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
-			parentNode.insertBefore(b[--bEnd], node);
-			a[aEnd] = b[bEnd];
-		} else {
-			if (!map) {
-				map = /* @__PURE__ */ new Map();
-				let i = bStart;
-				while (i < bEnd) map.set(b[i], i++);
-			}
-			const index = map.get(a[aStart]);
-			if (index != null) {
-				if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-				} else aStart++;
-			} else a[aStart++].remove();
-		}
-	}
-}
-const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function setStyleProperty(node, name, value) {
-	value != null ? node.style.setProperty(name, value) : node.style.removeProperty(name);
-}
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
-}
-function insertExpression(parent, value, current, marker, unwrapArray) {
-	const hydrating = isHydrating(parent);
-	if (hydrating) {
-		!current && (current = [...parent.childNodes]);
-		let cleaned = [];
-		for (let i = 0; i < current.length; i++) {
-			const node = current[i];
-			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
-			else cleaned.push(node);
-		}
-		current = cleaned;
-	}
-	while (typeof current === "function") current = current();
-	if (value === current) return current;
-	const t = typeof value, multi = marker !== void 0;
-	parent = multi && current[0] && current[0].parentNode || parent;
-	if (t === "string" || t === "number") {
-		if (hydrating) return current;
-		if (t === "number") {
-			value = value.toString();
-			if (value === current) return current;
-		}
-		if (multi) {
-			let node = current[0];
-			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
-			else node = document.createTextNode(value);
-			current = cleanChildren(parent, current, marker, node);
-		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
-		else current = parent.textContent = value;
-	} else if (value == null || t === "boolean") {
-		if (hydrating) return current;
-		current = cleanChildren(parent, current, marker);
-	} else if (t === "function") {
-		createRenderEffect(() => {
-			let v = value();
-			while (typeof v === "function") v = v();
-			current = insertExpression(parent, v, current, marker);
-		});
-		return () => current;
-	} else if (Array.isArray(value)) {
-		const array = [];
-		const currentArray = current && Array.isArray(current);
-		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
-			return () => current;
-		}
-		if (hydrating) {
-			if (!array.length) return current;
-			if (marker === void 0) return current = [...parent.childNodes];
-			let node = array[0];
-			if (node.parentNode !== parent) return current;
-			const nodes = [node];
-			while ((node = node.nextSibling) !== marker) nodes.push(node);
-			return current = nodes;
-		}
-		if (array.length === 0) {
-			current = cleanChildren(parent, current, marker);
-			if (multi) return current;
-		} else if (currentArray) {
-			if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-		} else {
-			current && cleanChildren(parent);
-			appendNodes(parent, array);
-		}
-		current = array;
-	} else if (value.nodeType) {
-		if (hydrating && value.parentNode) return current = multi ? [value] : value;
-		if (Array.isArray(current)) {
-			if (multi) return current = cleanChildren(parent, current, marker, value);
-			cleanChildren(parent, current, null, value);
-		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
-		else parent.replaceChild(value, parent.firstChild);
-		current = value;
-	}
-	return current;
-}
-function normalizeIncomingArray(normalized, array, current, unwrap) {
-	let dynamic = false;
-	for (let i = 0, len = array.length; i < len; i++) {
-		let item = array[i], prev = current && current[normalized.length], t;
-		if (item == null || item === true || item === false);
-		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
-		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") {
-			if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-		} else {
-			const value = String(item);
-			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
-			else normalized.push(document.createTextNode(value));
-		}
-	}
-	return dynamic;
-}
-function appendNodes(parent, array, marker = null) {
-	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
-}
-function cleanChildren(parent, current, marker, replacement) {
-	if (marker === void 0) return parent.textContent = "";
-	const node = replacement || document.createTextNode("");
-	if (current.length) {
-		let inserted = false;
-		for (let i = current.length - 1; i >= 0; i--) {
-			const el = current[i];
-			if (node !== el) {
-				const isParent = el.parentNode === parent;
-				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
-				else isParent && el.remove();
-			} else inserted = true;
-		}
-	} else parent.insertBefore(node, marker);
-	return [node];
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<li>Item: \`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div>Component <!>: \`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`);
-var _tmpl$7 = /*#__PURE__*/ template(\`<li>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<li>Item: \`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div>Component <!>: <!>\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`);
+var _tmpl$7 = /* @__PURE__ */ template(\`<li>\`);
 var UserStore = class {
 	constructor(id) {
 		this.id = id;
@@ -759,19 +491,27 @@ function UserProfile() {
 	currentUser.email = "john@example.com";
 	currentUser.age = 30;
 	currentUser.isActive = true;
-	return (() => {
-		var _el$ = _tmpl$(), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling;
-		_el$3.firstChild;
-		var _el$5 = _el$3.nextSibling;
-		_el$5.firstChild;
-		var _el$7 = _el$5.nextSibling;
-		_el$7.firstChild;
-		insert(_el$2, () => user().name);
-		insert(_el$3, () => user().email, null);
-		insert(_el$5, () => user().age, null);
-		insert(_el$7, () => user().isActive ? "Active" : "Inactive", null);
-		return _el$;
-	})();
+	var _el$ = _tmpl$();
+	var _el$2 = _el$.firstChild;
+	var _el$3 = _el$2.nextSibling;
+	_el$3.firstChild;
+	var _el$5 = _el$3.nextSibling;
+	_el$5.firstChild;
+	var _el$7 = _el$5.nextSibling;
+	_el$7.firstChild;
+	insert(_el$2, () => {
+		return user().name;
+	});
+	insert(_el$3, () => {
+		return user().email;
+	}, null);
+	insert(_el$5, () => {
+		return user().age;
+	}, null);
+	insert(_el$7, () => {
+		return user().isActive ? "Active" : "Inactive";
+	}, null);
+	return _el$;
 }
 var DataStore = class {
 	items = [];
@@ -789,31 +529,39 @@ function StoreComponent() {
 			data: Math.random()
 		});
 	};
-	return (() => {
-		var _el$9 = _tmpl$2(), _el$0 = _el$9.firstChild;
-		_el$0.firstChild;
-		var _el$10 = _el$0.nextSibling;
-		_el$10.firstChild;
-		var _el$12 = _el$10.nextSibling;
-		_el$12.firstChild;
-		var _el$14 = _el$12.nextSibling, _el$15 = _el$14.nextSibling;
-		insert(_el$0, () => store().version, null);
-		insert(_el$10, () => store().lastModified.toISOString(), null);
-		insert(_el$12, () => store().items.length, null);
-		_el$14.$$click = addItem;
-		insert(_el$15, createComponent(For, {
-			get each() {
-				return store().items;
-			},
-			children: (item) => (() => {
-				var _el$16 = _tmpl$3();
-				_el$16.firstChild;
-				insert(_el$16, () => JSON.stringify(item.data), null);
-				return _el$16;
-			})()
-		}));
-		return _el$9;
-	})();
+	var _el$9 = _tmpl$2();
+	var _el$10 = _el$9.firstChild;
+	_el$10.firstChild;
+	var _el$12 = _el$10.nextSibling;
+	_el$12.firstChild;
+	var _el$14 = _el$12.nextSibling;
+	_el$14.firstChild;
+	var _el$16 = _el$14.nextSibling;
+	var _el$17 = _el$16.nextSibling;
+	insert(_el$10, () => {
+		return store().version;
+	}, null);
+	insert(_el$12, () => {
+		return store().lastModified.toISOString();
+	}, null);
+	insert(_el$14, () => {
+		return store().items.length;
+	}, null);
+	_el$16.$$click = addItem;
+	insert(_el$17, createComponent(For, {
+		get each() {
+			return store().items;
+		},
+		children: (item) => (() => {
+			var _el$18 = _tmpl$3();
+			_el$18.firstChild;
+			insert(_el$18, () => {
+				return JSON.stringify(item.data);
+			}, null);
+			return _el$18;
+		})()
+	}));
+	return _el$9;
 }
 var Config = class {
 	constructor() {
@@ -825,21 +573,29 @@ var Config = class {
 };
 function ConfigComponent() {
 	const [config] = createSignal(new Config());
-	return (() => {
-		var _el$18 = _tmpl$4(), _el$19 = _el$18.firstChild;
-		_el$19.firstChild;
-		var _el$21 = _el$19.nextSibling, _el$24 = _el$21.firstChild.nextSibling;
-		_el$24.nextSibling;
-		var _el$25 = _el$21.nextSibling;
-		_el$25.firstChild;
-		var _el$27 = _el$25.nextSibling;
-		_el$27.firstChild;
-		insert(_el$19, () => config().apiUrl, null);
-		insert(_el$21, () => config().timeout, _el$24);
-		insert(_el$25, () => config().retries, null);
-		insert(_el$27, () => config().debug ? "Enabled" : "Disabled", null);
-		return _el$18;
-	})();
+	var _el$20 = _tmpl$4();
+	var _el$21 = _el$20.firstChild;
+	_el$21.firstChild;
+	var _el$23 = _el$21.nextSibling;
+	var _el$25 = _el$23.firstChild.nextSibling;
+	_el$25.nextSibling;
+	var _el$27 = _el$23.nextSibling;
+	_el$27.firstChild;
+	var _el$29 = _el$27.nextSibling;
+	_el$29.firstChild;
+	insert(_el$21, () => {
+		return config().apiUrl;
+	}, null);
+	insert(_el$23, () => {
+		return config().timeout;
+	}, _el$25);
+	insert(_el$27, () => {
+		return config().retries;
+	}, null);
+	insert(_el$29, () => {
+		return config().debug ? "Enabled" : "Disabled";
+	}, null);
+	return _el$20;
 }
 var BaseComponent = class {
 	constructor(id) {
@@ -853,13 +609,16 @@ var ConcreteComponent = class extends BaseComponent {
 	}
 	render() {
 		const _self$ = this;
-		return (() => {
-			var _el$29 = _tmpl$5(), _el$32 = _el$29.firstChild.nextSibling;
-			_el$32.nextSibling;
-			insert(_el$29, () => _self$.id, _el$32);
-			insert(_el$29, () => _self$.specificProp, null);
-			return _el$29;
-		})();
+		var _el$31 = _tmpl$5();
+		var _el$33 = _el$31.firstChild.nextSibling;
+		var _el$35 = _el$33.nextSibling.nextSibling;
+		insert(_el$31, () => {
+			return _self$.id;
+		}, _el$33);
+		insert(_el$31, () => {
+			return _self$.specificProp;
+		}, _el$35);
+		return _el$31;
 	}
 };
 var GenericStore = class {
@@ -887,25 +646,31 @@ function GenericStoreComponent() {
 		});
 		store().select("1");
 	};
-	return (() => {
-		var _el$33 = _tmpl$6(), _el$34 = _el$33.firstChild, _el$35 = _el$34.nextSibling;
-		_el$35.firstChild;
-		var _el$37 = _el$35.nextSibling;
-		_el$34.$$click = addItems;
-		insert(_el$35, () => store().selectedId || "None", null);
-		insert(_el$37, createComponent(For, {
-			get each() {
-				return store().items;
-			},
-			children: (item) => (() => {
-				var _el$38 = _tmpl$7();
-				insert(_el$38, () => item.name);
-				createRenderEffect((_$p) => setStyleProperty(_el$38, "font-weight", item.id === store().selectedId ? "bold" : "normal"));
-				return _el$38;
-			})()
-		}));
-		return _el$33;
-	})();
+	var _el$36 = _tmpl$6();
+	var _el$37 = _el$36.firstChild;
+	var _el$38 = _el$37.nextSibling;
+	_el$38.firstChild;
+	var _el$40 = _el$38.nextSibling;
+	_el$37.$$click = addItems;
+	insert(_el$38, () => {
+		return store().selectedId || "None";
+	}, null);
+	insert(_el$40, createComponent(For, {
+		get each() {
+			return store().items;
+		},
+		children: (item) => (() => {
+			var _el$41 = _tmpl$7();
+			insert(_el$41, () => {
+				return item.name;
+			});
+			effect(() => item.id === store().selectedId ? "bold" : "normal", (_v$) => {
+				setStyleProperty(_el$41, "font-weight", _v$);
+			});
+			return _el$41;
+		})()
+	}));
+	return _el$36;
 }
 delegateEvents(["click"]);
 export { BaseComponent, ConcreteComponent as Concrete, ConcreteComponent, Config, ConfigComponent, DataStore, GenericStore, GenericStoreComponent, StoreComponent, UserProfile, UserStore };
@@ -913,22 +678,7 @@ export { BaseComponent, ConcreteComponent as Concrete, ConcreteComponent, Config
 `;
 
 exports[`rolldown-plugin-solid dist should transform with typescript declare 1`] = `
-"const sharedConfig = {
-	context: void 0,
-	registry: void 0,
-	effects: void 0,
-	done: false,
-	getContextId() {
-		return getContextId(this.context.count);
-	},
-	getNextContextId() {
-		return getContextId(this.context.count++);
-	}
-};
-function getContextId(count) {
-	const num = String(count), len = num.length - 1;
-	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
-}
+"import { createComponent, delegateEvents, effect, insert, setStyleProperty, template } from "@solidjs/web";
 const equalFn = (a, b) => a === b;
 const $TRACK = Symbol("solid-track");
 const signalOptions = { equals: equalFn };
@@ -979,9 +729,6 @@ function createSignal(value, options) {
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
-}
-function createRenderEffect(fn, value, options) {
-	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -1398,267 +1145,17 @@ function mapArray(list, mapFn, options = {}) {
 		}
 	};
 }
-function createComponent(Comp, props) {
-	return untrack(() => Comp(props || {}));
-}
 function For(props) {
 	const fallback = "fallback" in props && { fallback: () => props.fallback };
 	return createMemo(mapArray(() => props.each, props.children, fallback || void 0));
 }
-function reconcileArrays(parentNode, a, b) {
-	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
-	while (aStart < aEnd || bStart < bEnd) {
-		if (a[aStart] === b[bStart]) {
-			aStart++;
-			bStart++;
-			continue;
-		}
-		while (a[aEnd - 1] === b[bEnd - 1]) {
-			aEnd--;
-			bEnd--;
-		}
-		if (aEnd === aStart) {
-			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
-			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
-		} else if (bEnd === bStart) while (aStart < aEnd) {
-			if (!map || !map.has(a[aStart])) a[aStart].remove();
-			aStart++;
-		}
-		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
-			const node = a[--aEnd].nextSibling;
-			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
-			parentNode.insertBefore(b[--bEnd], node);
-			a[aEnd] = b[bEnd];
-		} else {
-			if (!map) {
-				map = /* @__PURE__ */ new Map();
-				let i = bStart;
-				while (i < bEnd) map.set(b[i], i++);
-			}
-			const index = map.get(a[aStart]);
-			if (index != null) {
-				if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-				} else aStart++;
-			} else a[aStart++].remove();
-		}
-	}
-}
-const $$EVENTS = "_$DX_DELEGATE";
-function template(html, isImportNode, isSVG, isMathML) {
-	let node;
-	const create = () => {
-		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
-		t.innerHTML = html;
-		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
-	};
-	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
-	fn.cloneNode = fn;
-	return fn;
-}
-function delegateEvents(eventNames, document = window.document) {
-	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document.addEventListener(name, eventHandler);
-		}
-	}
-}
-function setStyleProperty(node, name, value) {
-	value != null ? node.style.setProperty(name, value) : node.style.removeProperty(name);
-}
-function insert(parent, accessor, marker, initial) {
-	if (marker !== void 0 && !initial) initial = [];
-	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
-}
-function isHydrating(node) {
-	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
-}
-function insertExpression(parent, value, current, marker, unwrapArray) {
-	const hydrating = isHydrating(parent);
-	if (hydrating) {
-		!current && (current = [...parent.childNodes]);
-		let cleaned = [];
-		for (let i = 0; i < current.length; i++) {
-			const node = current[i];
-			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
-			else cleaned.push(node);
-		}
-		current = cleaned;
-	}
-	while (typeof current === "function") current = current();
-	if (value === current) return current;
-	const t = typeof value, multi = marker !== void 0;
-	parent = multi && current[0] && current[0].parentNode || parent;
-	if (t === "string" || t === "number") {
-		if (hydrating) return current;
-		if (t === "number") {
-			value = value.toString();
-			if (value === current) return current;
-		}
-		if (multi) {
-			let node = current[0];
-			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
-			else node = document.createTextNode(value);
-			current = cleanChildren(parent, current, marker, node);
-		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
-		else current = parent.textContent = value;
-	} else if (value == null || t === "boolean") {
-		if (hydrating) return current;
-		current = cleanChildren(parent, current, marker);
-	} else if (t === "function") {
-		createRenderEffect(() => {
-			let v = value();
-			while (typeof v === "function") v = v();
-			current = insertExpression(parent, v, current, marker);
-		});
-		return () => current;
-	} else if (Array.isArray(value)) {
-		const array = [];
-		const currentArray = current && Array.isArray(current);
-		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
-			return () => current;
-		}
-		if (hydrating) {
-			if (!array.length) return current;
-			if (marker === void 0) return current = [...parent.childNodes];
-			let node = array[0];
-			if (node.parentNode !== parent) return current;
-			const nodes = [node];
-			while ((node = node.nextSibling) !== marker) nodes.push(node);
-			return current = nodes;
-		}
-		if (array.length === 0) {
-			current = cleanChildren(parent, current, marker);
-			if (multi) return current;
-		} else if (currentArray) {
-			if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-		} else {
-			current && cleanChildren(parent);
-			appendNodes(parent, array);
-		}
-		current = array;
-	} else if (value.nodeType) {
-		if (hydrating && value.parentNode) return current = multi ? [value] : value;
-		if (Array.isArray(current)) {
-			if (multi) return current = cleanChildren(parent, current, marker, value);
-			cleanChildren(parent, current, null, value);
-		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
-		else parent.replaceChild(value, parent.firstChild);
-		current = value;
-	}
-	return current;
-}
-function normalizeIncomingArray(normalized, array, current, unwrap) {
-	let dynamic = false;
-	for (let i = 0, len = array.length; i < len; i++) {
-		let item = array[i], prev = current && current[normalized.length], t;
-		if (item == null || item === true || item === false);
-		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
-		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") {
-			if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-		} else {
-			const value = String(item);
-			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
-			else normalized.push(document.createTextNode(value));
-		}
-	}
-	return dynamic;
-}
-function appendNodes(parent, array, marker = null) {
-	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
-}
-function cleanChildren(parent, current, marker, replacement) {
-	if (marker === void 0) return parent.textContent = "";
-	const node = replacement || document.createTextNode("");
-	if (current.length) {
-		let inserted = false;
-		for (let i = current.length - 1; i >= 0; i--) {
-			const el = current[i];
-			if (node !== el) {
-				const isParent = el.parentNode === parent;
-				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
-				else isParent && el.remove();
-			} else inserted = true;
-		}
-	} else parent.insertBefore(node, marker);
-	return [node];
-}
-var _tmpl$ = /*#__PURE__*/ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`);
-var _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`);
-var _tmpl$3 = /*#__PURE__*/ template(\`<li>Item: \`);
-var _tmpl$4 = /*#__PURE__*/ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`);
-var _tmpl$5 = /*#__PURE__*/ template(\`<div>Component <!>: \`);
-var _tmpl$6 = /*#__PURE__*/ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`);
-var _tmpl$7 = /*#__PURE__*/ template(\`<li>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`);
+var _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`);
+var _tmpl$3 = /* @__PURE__ */ template(\`<li>Item: \`);
+var _tmpl$4 = /* @__PURE__ */ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`);
+var _tmpl$5 = /* @__PURE__ */ template(\`<div>Component <!>: <!>\`);
+var _tmpl$6 = /* @__PURE__ */ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`);
+var _tmpl$7 = /* @__PURE__ */ template(\`<li>\`);
 var UserStore = class {
 	constructor(id) {
 		this.id = id;
@@ -1671,19 +1168,27 @@ function UserProfile() {
 	currentUser.email = "john@example.com";
 	currentUser.age = 30;
 	currentUser.isActive = true;
-	return (() => {
-		var _el$ = _tmpl$(), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling;
-		_el$3.firstChild;
-		var _el$5 = _el$3.nextSibling;
-		_el$5.firstChild;
-		var _el$7 = _el$5.nextSibling;
-		_el$7.firstChild;
-		insert(_el$2, () => user().name);
-		insert(_el$3, () => user().email, null);
-		insert(_el$5, () => user().age, null);
-		insert(_el$7, () => user().isActive ? "Active" : "Inactive", null);
-		return _el$;
-	})();
+	var _el$ = _tmpl$();
+	var _el$2 = _el$.firstChild;
+	var _el$3 = _el$2.nextSibling;
+	_el$3.firstChild;
+	var _el$5 = _el$3.nextSibling;
+	_el$5.firstChild;
+	var _el$7 = _el$5.nextSibling;
+	_el$7.firstChild;
+	insert(_el$2, () => {
+		return user().name;
+	});
+	insert(_el$3, () => {
+		return user().email;
+	}, null);
+	insert(_el$5, () => {
+		return user().age;
+	}, null);
+	insert(_el$7, () => {
+		return user().isActive ? "Active" : "Inactive";
+	}, null);
+	return _el$;
 }
 var DataStore = class {
 	items = [];
@@ -1701,31 +1206,39 @@ function StoreComponent() {
 			data: Math.random()
 		});
 	};
-	return (() => {
-		var _el$9 = _tmpl$2(), _el$0 = _el$9.firstChild;
-		_el$0.firstChild;
-		var _el$10 = _el$0.nextSibling;
-		_el$10.firstChild;
-		var _el$12 = _el$10.nextSibling;
-		_el$12.firstChild;
-		var _el$14 = _el$12.nextSibling, _el$15 = _el$14.nextSibling;
-		insert(_el$0, () => store().version, null);
-		insert(_el$10, () => store().lastModified.toISOString(), null);
-		insert(_el$12, () => store().items.length, null);
-		_el$14.$$click = addItem;
-		insert(_el$15, createComponent(For, {
-			get each() {
-				return store().items;
-			},
-			children: (item) => (() => {
-				var _el$16 = _tmpl$3();
-				_el$16.firstChild;
-				insert(_el$16, () => JSON.stringify(item.data), null);
-				return _el$16;
-			})()
-		}));
-		return _el$9;
-	})();
+	var _el$9 = _tmpl$2();
+	var _el$10 = _el$9.firstChild;
+	_el$10.firstChild;
+	var _el$12 = _el$10.nextSibling;
+	_el$12.firstChild;
+	var _el$14 = _el$12.nextSibling;
+	_el$14.firstChild;
+	var _el$16 = _el$14.nextSibling;
+	var _el$17 = _el$16.nextSibling;
+	insert(_el$10, () => {
+		return store().version;
+	}, null);
+	insert(_el$12, () => {
+		return store().lastModified.toISOString();
+	}, null);
+	insert(_el$14, () => {
+		return store().items.length;
+	}, null);
+	_el$16.$$click = addItem;
+	insert(_el$17, createComponent(For, {
+		get each() {
+			return store().items;
+		},
+		children: (item) => (() => {
+			var _el$18 = _tmpl$3();
+			_el$18.firstChild;
+			insert(_el$18, () => {
+				return JSON.stringify(item.data);
+			}, null);
+			return _el$18;
+		})()
+	}));
+	return _el$9;
 }
 var Config = class {
 	constructor() {
@@ -1737,21 +1250,29 @@ var Config = class {
 };
 function ConfigComponent() {
 	const [config] = createSignal(new Config());
-	return (() => {
-		var _el$18 = _tmpl$4(), _el$19 = _el$18.firstChild;
-		_el$19.firstChild;
-		var _el$21 = _el$19.nextSibling, _el$24 = _el$21.firstChild.nextSibling;
-		_el$24.nextSibling;
-		var _el$25 = _el$21.nextSibling;
-		_el$25.firstChild;
-		var _el$27 = _el$25.nextSibling;
-		_el$27.firstChild;
-		insert(_el$19, () => config().apiUrl, null);
-		insert(_el$21, () => config().timeout, _el$24);
-		insert(_el$25, () => config().retries, null);
-		insert(_el$27, () => config().debug ? "Enabled" : "Disabled", null);
-		return _el$18;
-	})();
+	var _el$20 = _tmpl$4();
+	var _el$21 = _el$20.firstChild;
+	_el$21.firstChild;
+	var _el$23 = _el$21.nextSibling;
+	var _el$25 = _el$23.firstChild.nextSibling;
+	_el$25.nextSibling;
+	var _el$27 = _el$23.nextSibling;
+	_el$27.firstChild;
+	var _el$29 = _el$27.nextSibling;
+	_el$29.firstChild;
+	insert(_el$21, () => {
+		return config().apiUrl;
+	}, null);
+	insert(_el$23, () => {
+		return config().timeout;
+	}, _el$25);
+	insert(_el$27, () => {
+		return config().retries;
+	}, null);
+	insert(_el$29, () => {
+		return config().debug ? "Enabled" : "Disabled";
+	}, null);
+	return _el$20;
 }
 var BaseComponent = class {
 	constructor(id) {
@@ -1765,13 +1286,16 @@ var ConcreteComponent = class extends BaseComponent {
 	}
 	render() {
 		const _self$ = this;
-		return (() => {
-			var _el$29 = _tmpl$5(), _el$32 = _el$29.firstChild.nextSibling;
-			_el$32.nextSibling;
-			insert(_el$29, () => _self$.id, _el$32);
-			insert(_el$29, () => _self$.specificProp, null);
-			return _el$29;
-		})();
+		var _el$31 = _tmpl$5();
+		var _el$33 = _el$31.firstChild.nextSibling;
+		var _el$35 = _el$33.nextSibling.nextSibling;
+		insert(_el$31, () => {
+			return _self$.id;
+		}, _el$33);
+		insert(_el$31, () => {
+			return _self$.specificProp;
+		}, _el$35);
+		return _el$31;
 	}
 };
 var GenericStore = class {
@@ -1799,25 +1323,31 @@ function GenericStoreComponent() {
 		});
 		store().select("1");
 	};
-	return (() => {
-		var _el$33 = _tmpl$6(), _el$34 = _el$33.firstChild, _el$35 = _el$34.nextSibling;
-		_el$35.firstChild;
-		var _el$37 = _el$35.nextSibling;
-		_el$34.$$click = addItems;
-		insert(_el$35, () => store().selectedId || "None", null);
-		insert(_el$37, createComponent(For, {
-			get each() {
-				return store().items;
-			},
-			children: (item) => (() => {
-				var _el$38 = _tmpl$7();
-				insert(_el$38, () => item.name);
-				createRenderEffect((_$p) => setStyleProperty(_el$38, "font-weight", item.id === store().selectedId ? "bold" : "normal"));
-				return _el$38;
-			})()
-		}));
-		return _el$33;
-	})();
+	var _el$36 = _tmpl$6();
+	var _el$37 = _el$36.firstChild;
+	var _el$38 = _el$37.nextSibling;
+	_el$38.firstChild;
+	var _el$40 = _el$38.nextSibling;
+	_el$37.$$click = addItems;
+	insert(_el$38, () => {
+		return store().selectedId || "None";
+	}, null);
+	insert(_el$40, createComponent(For, {
+		get each() {
+			return store().items;
+		},
+		children: (item) => (() => {
+			var _el$41 = _tmpl$7();
+			insert(_el$41, () => {
+				return item.name;
+			});
+			effect(() => item.id === store().selectedId ? "bold" : "normal", (_v$) => {
+				setStyleProperty(_el$41, "font-weight", _v$);
+			});
+			return _el$41;
+		})()
+	}));
+	return _el$36;
 }
 delegateEvents(["click"]);
 export { BaseComponent, ConcreteComponent as Concrete, ConcreteComponent, Config, ConfigComponent, DataStore, GenericStore, GenericStoreComponent, StoreComponent, UserProfile, UserStore };
