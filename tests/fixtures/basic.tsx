@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 
 const App = () => {
   const [count, setCount] = createSignal(0);
