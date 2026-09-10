@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "isolatedDeclarations": false,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
+  },
+  "include": ["./**/*.ts", "./**/*.tsx"]
+}

@@ -1,0 +1,3311 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`rolldown-plugin-solid src should transform complex HTML structures 1`] = `
+"let Listener = null;
+function untrack(fn) {
+	if (Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+function template(html, isImportNode, isSVG, isMathML) {
+	let node;
+	const create = () => {
+		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
+		t.innerHTML = html;
+		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
+	};
+	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
+	fn.cloneNode = fn;
+	return fn;
+}
+var _tmpl$ = /*#__PURE__*/ template(\`<div><p>Well-formed HTML\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<table><tr><td>Cell 1</td><td>Cell 2\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<img src=test.jpg alt=test>\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer\`);
+function TestValidation() {
+	return _tmpl$();
+}
+function TestTableElements() {
+	return _tmpl$2();
+}
+function TestVoidElements() {
+	return _tmpl$3();
+}
+function TestNestedElements() {
+	return _tmpl$4();
+}
+export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements };
+"
+`;
+
+exports[`rolldown-plugin-solid dist should transform complex HTML structures 1`] = `
+"let Listener = null;
+function untrack(fn) {
+	if (Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+function template(html, isImportNode, isSVG, isMathML) {
+	let node;
+	const create = () => {
+		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
+		t.innerHTML = html;
+		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
+	};
+	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
+	fn.cloneNode = fn;
+	return fn;
+}
+var _tmpl$ = /*#__PURE__*/ template(\`<div><p>Well-formed HTML\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<table><tr><td>Cell 1</td><td>Cell 2\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<img src=test.jpg alt=test>\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer\`);
+function TestValidation() {
+	return _tmpl$();
+}
+function TestTableElements() {
+	return _tmpl$2();
+}
+function TestVoidElements() {
+	return _tmpl$3();
+}
+function TestNestedElements() {
+	return _tmpl$4();
+}
+export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements };
+"
+`;
+
+exports[`rolldown-plugin-solid src should transform complex HTML with SSR 1`] = `
+"var L = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L || {});
+var o$1 = void 0;
+Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
+	return {
+		t: e,
+		i: r,
+		s: t,
+		c: n,
+		m: a,
+		p: s,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
+		o: S,
+		l: d
+	};
+}
+function B$1(e) {
+	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
+}
+B$1(2);
+B$1(3);
+B$1(1);
+B$1(0);
+B$1(4);
+B$1(5);
+B$1(6);
+B$1(7);
+var U = "__SEROVAL_REFS__";
+var j$1 = /* @__PURE__ */ new Map();
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof global != "undefined" && Object.defineProperty(global, U, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+});
+var { toString: bs } = Object.prototype;
+var ee$1 = () => {
+	let e = {
+		p: 0,
+		s: 0,
+		f: 0
+	};
+	return e.p = new Promise((r, t) => {
+		e.s = r, e.f = t;
+	}), e;
+};
+var In = (e, r) => {
+	e.s(r), e.p.s = 1, e.p.v = r;
+};
+var Rn = (e, r) => {
+	e.f(r), e.p.s = 2, e.p.v = r;
+};
+ee$1.toString();
+In.toString();
+Rn.toString();
+var xr = () => {
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
+	});
+	return {
+		__SEROVAL_STREAM__: !0,
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
+		},
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
+		},
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
+		}
+	};
+};
+xr.toString();
+var Tr = (e) => (r) => () => {
+	let t = 0, n = {
+		[e]: () => n,
+		next: () => {
+			if (t > r.d) return {
+				done: !0,
+				value: void 0
+			};
+			let a = t++, s = r.v[a];
+			if (a === r.t) throw s;
+			return {
+				done: a === r.d,
+				value: s
+			};
+		}
+	};
+	return n;
+};
+Tr.toString();
+var Or = (e, r) => (t) => () => {
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
+			done: !0,
+			value: void 0
+		});
+	};
+	t.on({
+		next: (S) => {
+			let d = u.shift();
+			d && d.s({
+				done: !1,
+				value: S
+			}), i.push(S);
+		},
+		throw: (S) => {
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
+		},
+		return: (S) => {
+			let d = u.shift();
+			d && d.s({
+				done: !0,
+				value: S
+			}), l(), a = i.length, i.push(S);
+		}
+	});
+	let g = {
+		[e]: () => g,
+		next: () => {
+			if (a === -1) {
+				let G = n++;
+				if (G >= i.length) {
+					let tt = r();
+					return u.push(tt), tt.p;
+				}
+				return {
+					done: !1,
+					value: i[G]
+				};
+			}
+			if (n > a) return {
+				done: !0,
+				value: void 0
+			};
+			let S = n++, d = i[S];
+			if (S !== a) return {
+				done: !1,
+				value: d
+			};
+			if (s) throw d;
+			return {
+				done: !0,
+				value: d
+			};
+		}
+	};
+	return g;
+};
+Or.toString();
+var wr = (e) => {
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
+};
+wr.toString();
+var oe$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(oe$1 || {});
+var Ro = () => T;
+var Po = Ro.toString();
+/=>/.test(Po);
+L.AggregateError | L.BigIntTypedArray;
+function ssr(t, ...nodes) {
+	if (nodes.length) {
+		let result = "";
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
+			if (node !== void 0) result += resolveSSRNode(node);
+		}
+		t = result + t[nodes.length];
+	}
+	return { t };
+}
+function resolveSSRNode(node, top) {
+	const t = typeof node;
+	if (t === "string") return node;
+	if (node == null || t === "boolean") return "";
+	if (Array.isArray(node)) {
+		let prev = {};
+		let mapped = "";
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
+		}
+		return mapped;
+	}
+	if (t === "object") return node.t;
+	if (t === "function") return resolveSSRNode(node());
+	return String(node);
+}
+var _tmpl$ = "<div><p>Well-formed HTML</p></div>";
+var _tmpl$2 = "<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>";
+var _tmpl$3 = "<img src=\\"test.jpg\\" alt=\\"test\\">";
+var _tmpl$4 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section></div>";
+function TestValidation() {
+	return ssr(_tmpl$);
+}
+function TestTableElements() {
+	return ssr(_tmpl$2);
+}
+function TestVoidElements() {
+	return ssr(_tmpl$3);
+}
+function TestNestedElements() {
+	return ssr(_tmpl$4);
+}
+export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements };
+"
+`;
+
+exports[`rolldown-plugin-solid dist should transform complex HTML with SSR 1`] = `
+"var L = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L || {});
+var o$1 = void 0;
+Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
+	return {
+		t: e,
+		i: r,
+		s: t,
+		c: n,
+		m: a,
+		p: s,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
+		o: S,
+		l: d
+	};
+}
+function B$1(e) {
+	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
+}
+B$1(2);
+B$1(3);
+B$1(1);
+B$1(0);
+B$1(4);
+B$1(5);
+B$1(6);
+B$1(7);
+var U = "__SEROVAL_REFS__";
+var j$1 = /* @__PURE__ */ new Map();
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof global != "undefined" && Object.defineProperty(global, U, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+});
+var { toString: bs } = Object.prototype;
+var ee$1 = () => {
+	let e = {
+		p: 0,
+		s: 0,
+		f: 0
+	};
+	return e.p = new Promise((r, t) => {
+		e.s = r, e.f = t;
+	}), e;
+};
+var In = (e, r) => {
+	e.s(r), e.p.s = 1, e.p.v = r;
+};
+var Rn = (e, r) => {
+	e.f(r), e.p.s = 2, e.p.v = r;
+};
+ee$1.toString();
+In.toString();
+Rn.toString();
+var xr = () => {
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
+	});
+	return {
+		__SEROVAL_STREAM__: !0,
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
+		},
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
+		},
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
+		}
+	};
+};
+xr.toString();
+var Tr = (e) => (r) => () => {
+	let t = 0, n = {
+		[e]: () => n,
+		next: () => {
+			if (t > r.d) return {
+				done: !0,
+				value: void 0
+			};
+			let a = t++, s = r.v[a];
+			if (a === r.t) throw s;
+			return {
+				done: a === r.d,
+				value: s
+			};
+		}
+	};
+	return n;
+};
+Tr.toString();
+var Or = (e, r) => (t) => () => {
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
+			done: !0,
+			value: void 0
+		});
+	};
+	t.on({
+		next: (S) => {
+			let d = u.shift();
+			d && d.s({
+				done: !1,
+				value: S
+			}), i.push(S);
+		},
+		throw: (S) => {
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
+		},
+		return: (S) => {
+			let d = u.shift();
+			d && d.s({
+				done: !0,
+				value: S
+			}), l(), a = i.length, i.push(S);
+		}
+	});
+	let g = {
+		[e]: () => g,
+		next: () => {
+			if (a === -1) {
+				let G = n++;
+				if (G >= i.length) {
+					let tt = r();
+					return u.push(tt), tt.p;
+				}
+				return {
+					done: !1,
+					value: i[G]
+				};
+			}
+			if (n > a) return {
+				done: !0,
+				value: void 0
+			};
+			let S = n++, d = i[S];
+			if (S !== a) return {
+				done: !1,
+				value: d
+			};
+			if (s) throw d;
+			return {
+				done: !0,
+				value: d
+			};
+		}
+	};
+	return g;
+};
+Or.toString();
+var wr = (e) => {
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
+};
+wr.toString();
+var oe$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(oe$1 || {});
+var Ro = () => T;
+var Po = Ro.toString();
+/=>/.test(Po);
+L.AggregateError | L.BigIntTypedArray;
+function ssr(t, ...nodes) {
+	if (nodes.length) {
+		let result = "";
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
+			if (node !== void 0) result += resolveSSRNode(node);
+		}
+		t = result + t[nodes.length];
+	}
+	return { t };
+}
+function resolveSSRNode(node, top) {
+	const t = typeof node;
+	if (t === "string") return node;
+	if (node == null || t === "boolean") return "";
+	if (Array.isArray(node)) {
+		let prev = {};
+		let mapped = "";
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
+		}
+		return mapped;
+	}
+	if (t === "object") return node.t;
+	if (t === "function") return resolveSSRNode(node());
+	return String(node);
+}
+var _tmpl$ = "<div><p>Well-formed HTML</p></div>";
+var _tmpl$2 = "<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>";
+var _tmpl$3 = "<img src=\\"test.jpg\\" alt=\\"test\\">";
+var _tmpl$4 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section></div>";
+function TestValidation() {
+	return ssr(_tmpl$);
+}
+function TestTableElements() {
+	return ssr(_tmpl$2);
+}
+function TestVoidElements() {
+	return ssr(_tmpl$3);
+}
+function TestNestedElements() {
+	return ssr(_tmpl$4);
+}
+export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements };
+"
+`;
+
+exports[`rolldown-plugin-solid src should transform complex HTML with universal 1`] = `
+"const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+const equalFn = (a, b) => a === b;
+const $PROXY = Symbol("solid-proxy");
+const SUPPORTS_PROXY = typeof Proxy === "function";
+const signalOptions = { equals: equalFn };
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+var Owner = null;
+let Transition = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createRoot(fn, detachedOwner) {
+	const listener = Listener, owner = Owner, unowned = fn.length === 0, current = detachedOwner === void 0 ? owner : detachedOwner, root = unowned ? UNOWNED : {
+		owned: null,
+		cleanups: null,
+		context: current ? current.context : null,
+		owner: current
+	}, updateFn = unowned ? fn : () => fn(() => untrack(() => cleanNode(root)));
+	Owner = root;
+	Listener = null;
+	try {
+		return runUpdates(updateFn, true);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+}
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value) => {
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
+		return writeSignal(s, value);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createRenderEffect(fn, value, options) {
+	updateComputation(createComputation(fn, value, false, STALE));
+}
+function createMemo(fn, value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const c = createComputation(fn, value, true, 0);
+	c.observers = null;
+	c.observerSlots = null;
+	c.comparator = options.equals || void 0;
+	updateComputation(c);
+	return readSignal.bind(c);
+}
+function untrack(fn) {
+	if (Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
+	}
+	if (Listener) {
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function handleError(err, owner = Owner) {
+	throw castError(err);
+}
+function createComponent$1(Comp, props) {
+	return untrack(() => Comp(props || {}));
+}
+function trueFn() {
+	return true;
+}
+const propTraps = {
+	get(_, property, receiver) {
+		if (property === $PROXY) return receiver;
+		return _.get(property);
+	},
+	has(_, property) {
+		if (property === $PROXY) return true;
+		return _.has(property);
+	},
+	set: trueFn,
+	deleteProperty: trueFn,
+	getOwnPropertyDescriptor(_, property) {
+		return {
+			configurable: true,
+			enumerable: true,
+			get() {
+				return _.get(property);
+			},
+			set: trueFn,
+			deleteProperty: trueFn
+		};
+	},
+	ownKeys(_) {
+		return _.keys();
+	}
+};
+function resolveSource(s) {
+	return !(s = typeof s === "function" ? s() : s) ? {} : s;
+}
+function resolveSources() {
+	for (let i = 0, length = this.length; i < length; ++i) {
+		const v = this[i]();
+		if (v !== void 0) return v;
+	}
+}
+function mergeProps$1(...sources) {
+	let proxy = false;
+	for (let i = 0; i < sources.length; i++) {
+		const s = sources[i];
+		proxy = proxy || !!s && $PROXY in s;
+		sources[i] = typeof s === "function" ? (proxy = true, createMemo(s)) : s;
+	}
+	if (SUPPORTS_PROXY && proxy) return new Proxy({
+		get(property) {
+			for (let i = sources.length - 1; i >= 0; i--) {
+				const v = resolveSource(sources[i])[property];
+				if (v !== void 0) return v;
+			}
+		},
+		has(property) {
+			for (let i = sources.length - 1; i >= 0; i--) if (property in resolveSource(sources[i])) return true;
+			return false;
+		},
+		keys() {
+			const keys = [];
+			for (let i = 0; i < sources.length; i++) keys.push(...Object.keys(resolveSource(sources[i])));
+			return [...new Set(keys)];
+		}
+	}, propTraps);
+	const sourcesMap = {};
+	const defined = Object.create(null);
+	for (let i = sources.length - 1; i >= 0; i--) {
+		const source = sources[i];
+		if (!source) continue;
+		const sourceKeys = Object.getOwnPropertyNames(source);
+		for (let i = sourceKeys.length - 1; i >= 0; i--) {
+			const key = sourceKeys[i];
+			if (key === "__proto__" || key === "constructor") continue;
+			const desc = Object.getOwnPropertyDescriptor(source, key);
+			if (!defined[key]) defined[key] = desc.get ? {
+				enumerable: true,
+				configurable: true,
+				get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
+			} : desc.value !== void 0 ? desc : void 0;
+			else {
+				const sources = sourcesMap[key];
+				if (sources) {
+					if (desc.get) sources.push(desc.get.bind(source));
+					else if (desc.value !== void 0) sources.push(() => desc.value);
+				}
+			}
+		}
+	}
+	const target = {};
+	const definedKeys = Object.keys(defined);
+	for (let i = definedKeys.length - 1; i >= 0; i--) {
+		const key = definedKeys[i], desc = defined[key];
+		if (desc && desc.get) Object.defineProperty(target, key, desc);
+		else target[key] = desc ? desc.value : void 0;
+	}
+	return target;
+}
+const memo$1 = (fn) => createMemo(() => fn());
+function createRenderer$1({ createElement, createTextNode, isTextNode, replaceText, insertNode, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
+	function insert(parent, accessor, marker, initial) {
+		if (marker !== void 0 && !initial) initial = [];
+		if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+		createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+	}
+	function insertExpression(parent, value, current, marker, unwrapArray) {
+		while (typeof current === "function") current = current();
+		if (value === current) return current;
+		const t = typeof value, multi = marker !== void 0;
+		if (t === "string" || t === "number") {
+			if (t === "number") value = value.toString();
+			if (multi) {
+				let node = current[0];
+				if (node && isTextNode(node)) replaceText(node, value);
+				else node = createTextNode(value);
+				current = cleanChildren(parent, current, marker, node);
+			} else if (current !== "" && typeof current === "string") replaceText(getFirstChild(parent), current = value);
+			else {
+				cleanChildren(parent, current, marker, createTextNode(value));
+				current = value;
+			}
+		} else if (value == null || t === "boolean") current = cleanChildren(parent, current, marker);
+		else if (t === "function") {
+			createRenderEffect(() => {
+				let v = value();
+				while (typeof v === "function") v = v();
+				current = insertExpression(parent, v, current, marker);
+			});
+			return () => current;
+		} else if (Array.isArray(value)) {
+			const array = [];
+			if (normalizeIncomingArray(array, value, unwrapArray)) {
+				createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+				return () => current;
+			}
+			if (array.length === 0) {
+				const replacement = cleanChildren(parent, current, marker);
+				if (multi) return current = replacement;
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
+			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
+			current = array;
+		} else {
+			if (Array.isArray(current)) {
+				if (multi) return current = cleanChildren(parent, current, marker, value);
+				cleanChildren(parent, current, null, value);
+			} else if (current == null || current === "" || !getFirstChild(parent)) insertNode(parent, value);
+			else replaceNode(parent, value, getFirstChild(parent));
+			current = value;
+		}
+		return current;
+	}
+	function normalizeIncomingArray(normalized, array, unwrap) {
+		let dynamic = false;
+		for (let i = 0, len = array.length; i < len; i++) {
+			let item = array[i], t;
+			if (item == null || item === true || item === false);
+			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
+			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
+		}
+		return dynamic;
+	}
+	function reconcileArrays(parentNode, a, b) {
+		let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = getNextSibling(a[aEnd - 1]), map = null;
+		while (aStart < aEnd || bStart < bEnd) {
+			if (a[aStart] === b[bStart]) {
+				aStart++;
+				bStart++;
+				continue;
+			}
+			while (a[aEnd - 1] === b[bEnd - 1]) {
+				aEnd--;
+				bEnd--;
+			}
+			if (aEnd === aStart) {
+				const node = bEnd < bLength ? bStart ? getNextSibling(b[bStart - 1]) : b[bEnd - bStart] : after;
+				while (bStart < bEnd) insertNode(parentNode, b[bStart++], node);
+			} else if (bEnd === bStart) while (aStart < aEnd) {
+				if (!map || !map.has(a[aStart])) removeNode(parentNode, a[aStart]);
+				aStart++;
+			}
+			else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+				const node = getNextSibling(a[--aEnd]);
+				insertNode(parentNode, b[bStart++], getNextSibling(a[aStart++]));
+				insertNode(parentNode, b[--bEnd], node);
+				a[aEnd] = b[bEnd];
+			} else {
+				if (!map) {
+					map = /* @__PURE__ */ new Map();
+					let i = bStart;
+					while (i < bEnd) map.set(b[i], i++);
+				}
+				const index = map.get(a[aStart]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
+			}
+		}
+	}
+	function cleanChildren(parent, current, marker, replacement) {
+		if (marker === void 0) {
+			let removed;
+			while (removed = getFirstChild(parent)) removeNode(parent, removed);
+			replacement && insertNode(parent, replacement);
+			return "";
+		}
+		const node = replacement || createTextNode("");
+		if (current.length) {
+			let inserted = false;
+			for (let i = current.length - 1; i >= 0; i--) {
+				const el = current[i];
+				if (node !== el) {
+					const isParent = getParentNode(el) === parent;
+					if (!inserted && !i) isParent ? replaceNode(parent, node, el) : insertNode(parent, node, marker);
+					else isParent && removeNode(parent, el);
+				} else inserted = true;
+			}
+		} else insertNode(parent, node, marker);
+		return [node];
+	}
+	function appendNodes(parent, array, marker) {
+		for (let i = 0, len = array.length; i < len; i++) insertNode(parent, array[i], marker);
+	}
+	function replaceNode(parent, newNode, oldNode) {
+		insertNode(parent, newNode, oldNode);
+		removeNode(parent, oldNode);
+	}
+	function spreadExpression(node, props, prevProps = {}, skipChildren) {
+		props || (props = {});
+		if (!skipChildren) createRenderEffect(() => prevProps.children = insertExpression(node, props.children, prevProps.children));
+		createRenderEffect(() => props.ref && props.ref(node));
+		createRenderEffect(() => {
+			for (const prop in props) {
+				if (prop === "children" || prop === "ref") continue;
+				const value = props[prop];
+				if (value === prevProps[prop]) continue;
+				setProperty(node, prop, value, prevProps[prop]);
+				prevProps[prop] = value;
+			}
+		});
+		return prevProps;
+	}
+	return {
+		render(code, element) {
+			let disposer;
+			createRoot((dispose) => {
+				disposer = dispose;
+				insert(element, code());
+			});
+			return disposer;
+		},
+		insert,
+		spread(node, accessor, skipChildren) {
+			if (typeof accessor === "function") createRenderEffect((current) => spreadExpression(node, accessor(), current, skipChildren));
+			else spreadExpression(node, accessor, void 0, skipChildren);
+		},
+		createElement,
+		createTextNode,
+		insertNode,
+		setProp(node, name, value, prev) {
+			setProperty(node, name, value, prev);
+			return value;
+		},
+		mergeProps: mergeProps$1,
+		effect: createRenderEffect,
+		memo: memo$1,
+		createComponent: createComponent$1,
+		use(fn, element, arg) {
+			return untrack(() => fn(element, arg));
+		}
+	};
+}
+function createRenderer(options) {
+	const renderer = createRenderer$1(options);
+	renderer.mergeProps = mergeProps$1;
+	return renderer;
+}
+const { createComponent, createElement, createTextNode, effect, insert, insertNode, memo, mergeProps, render, setProp, spread, use } = createRenderer({
+	createElement() {},
+	createTextNode() {},
+	getFirstChild() {},
+	getNextSibling() {},
+	getParentNode() {},
+	insertNode() {},
+	isTextNode() {
+		return true;
+	},
+	removeNode() {},
+	replaceText() {},
+	setProperty() {}
+});
+function TestValidation() {
+	return (() => {
+		var _el$ = createElement("div"), _el$2 = createElement("p");
+		insertNode(_el$, _el$2);
+		insertNode(_el$2, createTextNode(\`Well-formed HTML\`));
+		return _el$;
+	})();
+}
+function TestTableElements() {
+	return (() => {
+		var _el$4 = createElement("table"), _el$5 = createElement("tr"), _el$6 = createElement("td"), _el$8 = createElement("td");
+		insertNode(_el$4, _el$5);
+		insertNode(_el$5, _el$6);
+		insertNode(_el$5, _el$8);
+		insertNode(_el$6, createTextNode(\`Cell 1\`));
+		insertNode(_el$8, createTextNode(\`Cell 2\`));
+		return _el$4;
+	})();
+}
+function TestVoidElements() {
+	return (() => {
+		var _el$0 = createElement("img");
+		setProp(_el$0, "src", "test.jpg");
+		setProp(_el$0, "alt", "test");
+		return _el$0;
+	})();
+}
+function TestNestedElements() {
+	return (() => {
+		var _el$1 = createElement("div"), _el$10 = createElement("section"), _el$11 = createElement("article"), _el$12 = createElement("header"), _el$13 = createElement("h1"), _el$15 = createElement("main"), _el$16 = createElement("p"), _el$18 = createElement("footer"), _el$19 = createElement("small");
+		insertNode(_el$1, _el$10);
+		insertNode(_el$10, _el$11);
+		insertNode(_el$11, _el$12);
+		insertNode(_el$11, _el$15);
+		insertNode(_el$11, _el$18);
+		insertNode(_el$12, _el$13);
+		insertNode(_el$13, createTextNode(\`Title\`));
+		insertNode(_el$15, _el$16);
+		insertNode(_el$16, createTextNode(\`Content\`));
+		insertNode(_el$18, _el$19);
+		insertNode(_el$19, createTextNode(\`Footer\`));
+		return _el$1;
+	})();
+}
+export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements };
+"
+`;
+
+exports[`rolldown-plugin-solid dist should transform complex HTML with universal 1`] = `
+"const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+const equalFn = (a, b) => a === b;
+const $PROXY = Symbol("solid-proxy");
+const SUPPORTS_PROXY = typeof Proxy === "function";
+const signalOptions = { equals: equalFn };
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+var Owner = null;
+let Transition = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createRoot(fn, detachedOwner) {
+	const listener = Listener, owner = Owner, unowned = fn.length === 0, current = detachedOwner === void 0 ? owner : detachedOwner, root = unowned ? UNOWNED : {
+		owned: null,
+		cleanups: null,
+		context: current ? current.context : null,
+		owner: current
+	}, updateFn = unowned ? fn : () => fn(() => untrack(() => cleanNode(root)));
+	Owner = root;
+	Listener = null;
+	try {
+		return runUpdates(updateFn, true);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+}
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value) => {
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
+		return writeSignal(s, value);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createRenderEffect(fn, value, options) {
+	updateComputation(createComputation(fn, value, false, STALE));
+}
+function createMemo(fn, value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const c = createComputation(fn, value, true, 0);
+	c.observers = null;
+	c.observerSlots = null;
+	c.comparator = options.equals || void 0;
+	updateComputation(c);
+	return readSignal.bind(c);
+}
+function untrack(fn) {
+	if (Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
+	}
+	if (Listener) {
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function handleError(err, owner = Owner) {
+	throw castError(err);
+}
+function createComponent$1(Comp, props) {
+	return untrack(() => Comp(props || {}));
+}
+function trueFn() {
+	return true;
+}
+const propTraps = {
+	get(_, property, receiver) {
+		if (property === $PROXY) return receiver;
+		return _.get(property);
+	},
+	has(_, property) {
+		if (property === $PROXY) return true;
+		return _.has(property);
+	},
+	set: trueFn,
+	deleteProperty: trueFn,
+	getOwnPropertyDescriptor(_, property) {
+		return {
+			configurable: true,
+			enumerable: true,
+			get() {
+				return _.get(property);
+			},
+			set: trueFn,
+			deleteProperty: trueFn
+		};
+	},
+	ownKeys(_) {
+		return _.keys();
+	}
+};
+function resolveSource(s) {
+	return !(s = typeof s === "function" ? s() : s) ? {} : s;
+}
+function resolveSources() {
+	for (let i = 0, length = this.length; i < length; ++i) {
+		const v = this[i]();
+		if (v !== void 0) return v;
+	}
+}
+function mergeProps$1(...sources) {
+	let proxy = false;
+	for (let i = 0; i < sources.length; i++) {
+		const s = sources[i];
+		proxy = proxy || !!s && $PROXY in s;
+		sources[i] = typeof s === "function" ? (proxy = true, createMemo(s)) : s;
+	}
+	if (SUPPORTS_PROXY && proxy) return new Proxy({
+		get(property) {
+			for (let i = sources.length - 1; i >= 0; i--) {
+				const v = resolveSource(sources[i])[property];
+				if (v !== void 0) return v;
+			}
+		},
+		has(property) {
+			for (let i = sources.length - 1; i >= 0; i--) if (property in resolveSource(sources[i])) return true;
+			return false;
+		},
+		keys() {
+			const keys = [];
+			for (let i = 0; i < sources.length; i++) keys.push(...Object.keys(resolveSource(sources[i])));
+			return [...new Set(keys)];
+		}
+	}, propTraps);
+	const sourcesMap = {};
+	const defined = Object.create(null);
+	for (let i = sources.length - 1; i >= 0; i--) {
+		const source = sources[i];
+		if (!source) continue;
+		const sourceKeys = Object.getOwnPropertyNames(source);
+		for (let i = sourceKeys.length - 1; i >= 0; i--) {
+			const key = sourceKeys[i];
+			if (key === "__proto__" || key === "constructor") continue;
+			const desc = Object.getOwnPropertyDescriptor(source, key);
+			if (!defined[key]) defined[key] = desc.get ? {
+				enumerable: true,
+				configurable: true,
+				get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
+			} : desc.value !== void 0 ? desc : void 0;
+			else {
+				const sources = sourcesMap[key];
+				if (sources) {
+					if (desc.get) sources.push(desc.get.bind(source));
+					else if (desc.value !== void 0) sources.push(() => desc.value);
+				}
+			}
+		}
+	}
+	const target = {};
+	const definedKeys = Object.keys(defined);
+	for (let i = definedKeys.length - 1; i >= 0; i--) {
+		const key = definedKeys[i], desc = defined[key];
+		if (desc && desc.get) Object.defineProperty(target, key, desc);
+		else target[key] = desc ? desc.value : void 0;
+	}
+	return target;
+}
+const memo$1 = (fn) => createMemo(() => fn());
+function createRenderer$1({ createElement, createTextNode, isTextNode, replaceText, insertNode, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
+	function insert(parent, accessor, marker, initial) {
+		if (marker !== void 0 && !initial) initial = [];
+		if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+		createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+	}
+	function insertExpression(parent, value, current, marker, unwrapArray) {
+		while (typeof current === "function") current = current();
+		if (value === current) return current;
+		const t = typeof value, multi = marker !== void 0;
+		if (t === "string" || t === "number") {
+			if (t === "number") value = value.toString();
+			if (multi) {
+				let node = current[0];
+				if (node && isTextNode(node)) replaceText(node, value);
+				else node = createTextNode(value);
+				current = cleanChildren(parent, current, marker, node);
+			} else if (current !== "" && typeof current === "string") replaceText(getFirstChild(parent), current = value);
+			else {
+				cleanChildren(parent, current, marker, createTextNode(value));
+				current = value;
+			}
+		} else if (value == null || t === "boolean") current = cleanChildren(parent, current, marker);
+		else if (t === "function") {
+			createRenderEffect(() => {
+				let v = value();
+				while (typeof v === "function") v = v();
+				current = insertExpression(parent, v, current, marker);
+			});
+			return () => current;
+		} else if (Array.isArray(value)) {
+			const array = [];
+			if (normalizeIncomingArray(array, value, unwrapArray)) {
+				createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+				return () => current;
+			}
+			if (array.length === 0) {
+				const replacement = cleanChildren(parent, current, marker);
+				if (multi) return current = replacement;
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
+			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
+			current = array;
+		} else {
+			if (Array.isArray(current)) {
+				if (multi) return current = cleanChildren(parent, current, marker, value);
+				cleanChildren(parent, current, null, value);
+			} else if (current == null || current === "" || !getFirstChild(parent)) insertNode(parent, value);
+			else replaceNode(parent, value, getFirstChild(parent));
+			current = value;
+		}
+		return current;
+	}
+	function normalizeIncomingArray(normalized, array, unwrap) {
+		let dynamic = false;
+		for (let i = 0, len = array.length; i < len; i++) {
+			let item = array[i], t;
+			if (item == null || item === true || item === false);
+			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
+			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
+		}
+		return dynamic;
+	}
+	function reconcileArrays(parentNode, a, b) {
+		let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = getNextSibling(a[aEnd - 1]), map = null;
+		while (aStart < aEnd || bStart < bEnd) {
+			if (a[aStart] === b[bStart]) {
+				aStart++;
+				bStart++;
+				continue;
+			}
+			while (a[aEnd - 1] === b[bEnd - 1]) {
+				aEnd--;
+				bEnd--;
+			}
+			if (aEnd === aStart) {
+				const node = bEnd < bLength ? bStart ? getNextSibling(b[bStart - 1]) : b[bEnd - bStart] : after;
+				while (bStart < bEnd) insertNode(parentNode, b[bStart++], node);
+			} else if (bEnd === bStart) while (aStart < aEnd) {
+				if (!map || !map.has(a[aStart])) removeNode(parentNode, a[aStart]);
+				aStart++;
+			}
+			else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+				const node = getNextSibling(a[--aEnd]);
+				insertNode(parentNode, b[bStart++], getNextSibling(a[aStart++]));
+				insertNode(parentNode, b[--bEnd], node);
+				a[aEnd] = b[bEnd];
+			} else {
+				if (!map) {
+					map = /* @__PURE__ */ new Map();
+					let i = bStart;
+					while (i < bEnd) map.set(b[i], i++);
+				}
+				const index = map.get(a[aStart]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
+			}
+		}
+	}
+	function cleanChildren(parent, current, marker, replacement) {
+		if (marker === void 0) {
+			let removed;
+			while (removed = getFirstChild(parent)) removeNode(parent, removed);
+			replacement && insertNode(parent, replacement);
+			return "";
+		}
+		const node = replacement || createTextNode("");
+		if (current.length) {
+			let inserted = false;
+			for (let i = current.length - 1; i >= 0; i--) {
+				const el = current[i];
+				if (node !== el) {
+					const isParent = getParentNode(el) === parent;
+					if (!inserted && !i) isParent ? replaceNode(parent, node, el) : insertNode(parent, node, marker);
+					else isParent && removeNode(parent, el);
+				} else inserted = true;
+			}
+		} else insertNode(parent, node, marker);
+		return [node];
+	}
+	function appendNodes(parent, array, marker) {
+		for (let i = 0, len = array.length; i < len; i++) insertNode(parent, array[i], marker);
+	}
+	function replaceNode(parent, newNode, oldNode) {
+		insertNode(parent, newNode, oldNode);
+		removeNode(parent, oldNode);
+	}
+	function spreadExpression(node, props, prevProps = {}, skipChildren) {
+		props || (props = {});
+		if (!skipChildren) createRenderEffect(() => prevProps.children = insertExpression(node, props.children, prevProps.children));
+		createRenderEffect(() => props.ref && props.ref(node));
+		createRenderEffect(() => {
+			for (const prop in props) {
+				if (prop === "children" || prop === "ref") continue;
+				const value = props[prop];
+				if (value === prevProps[prop]) continue;
+				setProperty(node, prop, value, prevProps[prop]);
+				prevProps[prop] = value;
+			}
+		});
+		return prevProps;
+	}
+	return {
+		render(code, element) {
+			let disposer;
+			createRoot((dispose) => {
+				disposer = dispose;
+				insert(element, code());
+			});
+			return disposer;
+		},
+		insert,
+		spread(node, accessor, skipChildren) {
+			if (typeof accessor === "function") createRenderEffect((current) => spreadExpression(node, accessor(), current, skipChildren));
+			else spreadExpression(node, accessor, void 0, skipChildren);
+		},
+		createElement,
+		createTextNode,
+		insertNode,
+		setProp(node, name, value, prev) {
+			setProperty(node, name, value, prev);
+			return value;
+		},
+		mergeProps: mergeProps$1,
+		effect: createRenderEffect,
+		memo: memo$1,
+		createComponent: createComponent$1,
+		use(fn, element, arg) {
+			return untrack(() => fn(element, arg));
+		}
+	};
+}
+function createRenderer(options) {
+	const renderer = createRenderer$1(options);
+	renderer.mergeProps = mergeProps$1;
+	return renderer;
+}
+const { createComponent, createElement, createTextNode, effect, insert, insertNode, memo, mergeProps, render, setProp, spread, use } = createRenderer({
+	createElement() {},
+	createTextNode() {},
+	getFirstChild() {},
+	getNextSibling() {},
+	getParentNode() {},
+	insertNode() {},
+	isTextNode() {
+		return true;
+	},
+	removeNode() {},
+	replaceText() {},
+	setProperty() {}
+});
+function TestValidation() {
+	return (() => {
+		var _el$ = createElement("div"), _el$2 = createElement("p");
+		insertNode(_el$, _el$2);
+		insertNode(_el$2, createTextNode(\`Well-formed HTML\`));
+		return _el$;
+	})();
+}
+function TestTableElements() {
+	return (() => {
+		var _el$4 = createElement("table"), _el$5 = createElement("tr"), _el$6 = createElement("td"), _el$8 = createElement("td");
+		insertNode(_el$4, _el$5);
+		insertNode(_el$5, _el$6);
+		insertNode(_el$5, _el$8);
+		insertNode(_el$6, createTextNode(\`Cell 1\`));
+		insertNode(_el$8, createTextNode(\`Cell 2\`));
+		return _el$4;
+	})();
+}
+function TestVoidElements() {
+	return (() => {
+		var _el$0 = createElement("img");
+		setProp(_el$0, "src", "test.jpg");
+		setProp(_el$0, "alt", "test");
+		return _el$0;
+	})();
+}
+function TestNestedElements() {
+	return (() => {
+		var _el$1 = createElement("div"), _el$10 = createElement("section"), _el$11 = createElement("article"), _el$12 = createElement("header"), _el$13 = createElement("h1"), _el$15 = createElement("main"), _el$16 = createElement("p"), _el$18 = createElement("footer"), _el$19 = createElement("small");
+		insertNode(_el$1, _el$10);
+		insertNode(_el$10, _el$11);
+		insertNode(_el$11, _el$12);
+		insertNode(_el$11, _el$15);
+		insertNode(_el$11, _el$18);
+		insertNode(_el$12, _el$13);
+		insertNode(_el$13, createTextNode(\`Title\`));
+		insertNode(_el$15, _el$16);
+		insertNode(_el$16, createTextNode(\`Content\`));
+		insertNode(_el$18, _el$19);
+		insertNode(_el$19, createTextNode(\`Footer\`));
+		return _el$1;
+	})();
+}
+export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements };
+"
+`;
+
+exports[`rolldown-plugin-solid src should transform data-hk attribute warning 1`] = `
+"const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+const equalFn = (a, b) => a === b;
+const signalOptions = { equals: equalFn };
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+var Owner = null;
+let Transition = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value) => {
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
+		return writeSignal(s, value);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createRenderEffect(fn, value, options) {
+	updateComputation(createComputation(fn, value, false, STALE));
+}
+function untrack(fn) {
+	if (Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
+	}
+	if (Listener) {
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function handleError(err, owner = Owner) {
+	throw castError(err);
+}
+function reconcileArrays(parentNode, a, b) {
+	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
+	while (aStart < aEnd || bStart < bEnd) {
+		if (a[aStart] === b[bStart]) {
+			aStart++;
+			bStart++;
+			continue;
+		}
+		while (a[aEnd - 1] === b[bEnd - 1]) {
+			aEnd--;
+			bEnd--;
+		}
+		if (aEnd === aStart) {
+			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
+			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
+		} else if (bEnd === bStart) while (aStart < aEnd) {
+			if (!map || !map.has(a[aStart])) a[aStart].remove();
+			aStart++;
+		}
+		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+			const node = a[--aEnd].nextSibling;
+			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
+			parentNode.insertBefore(b[--bEnd], node);
+			a[aEnd] = b[bEnd];
+		} else {
+			if (!map) {
+				map = /* @__PURE__ */ new Map();
+				let i = bStart;
+				while (i < bEnd) map.set(b[i], i++);
+			}
+			const index = map.get(a[aStart]);
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
+		}
+	}
+}
+const $$EVENTS = "_$DX_DELEGATE";
+function template(html, isImportNode, isSVG, isMathML) {
+	let node;
+	const create = () => {
+		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
+		t.innerHTML = html;
+		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
+	};
+	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
+	fn.cloneNode = fn;
+	return fn;
+}
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
+	for (let i = 0, l = eventNames.length; i < l; i++) {
+		const name = eventNames[i];
+		if (!e.has(name)) {
+			e.add(name);
+			document.addEventListener(name, eventHandler);
+		}
+	}
+}
+function insert(parent, accessor, marker, initial) {
+	if (marker !== void 0 && !initial) initial = [];
+	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+}
+function isHydrating(node) {
+	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
+}
+function eventHandler(e) {
+	if (sharedConfig.registry && sharedConfig.events) {
+		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
+	}
+	let node = e.target;
+	const key = \`$$\${e.type}\`;
+	const oriTarget = e.target;
+	const oriCurrentTarget = e.currentTarget;
+	const retarget = (value) => Object.defineProperty(e, "target", {
+		configurable: true,
+		value
+	});
+	const handleNode = () => {
+		const handler = node[key];
+		if (handler && !node.disabled) {
+			const data = node[\`\${key}Data\`];
+			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
+			if (e.cancelBubble) return;
+		}
+		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
+		return true;
+	};
+	const walkUpTree = () => {
+		while (handleNode() && (node = node._$host || node.parentNode || node.host));
+	};
+	Object.defineProperty(e, "currentTarget", {
+		configurable: true,
+		get() {
+			return node || document;
+		}
+	});
+	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
+	if (e.composedPath) {
+		const path = e.composedPath();
+		retarget(path[0]);
+		for (let i = 0; i < path.length - 2; i++) {
+			node = path[i];
+			if (!handleNode()) break;
+			if (node._$host) {
+				node = node._$host;
+				walkUpTree();
+				break;
+			}
+			if (node.parentNode === oriCurrentTarget) break;
+		}
+	} else walkUpTree();
+	retarget(oriTarget);
+}
+function insertExpression(parent, value, current, marker, unwrapArray) {
+	const hydrating = isHydrating(parent);
+	if (hydrating) {
+		!current && (current = [...parent.childNodes]);
+		let cleaned = [];
+		for (let i = 0; i < current.length; i++) {
+			const node = current[i];
+			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
+			else cleaned.push(node);
+		}
+		current = cleaned;
+	}
+	while (typeof current === "function") current = current();
+	if (value === current) return current;
+	const t = typeof value, multi = marker !== void 0;
+	parent = multi && current[0] && current[0].parentNode || parent;
+	if (t === "string" || t === "number") {
+		if (hydrating) return current;
+		if (t === "number") {
+			value = value.toString();
+			if (value === current) return current;
+		}
+		if (multi) {
+			let node = current[0];
+			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
+			else node = document.createTextNode(value);
+			current = cleanChildren(parent, current, marker, node);
+		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
+		else current = parent.textContent = value;
+	} else if (value == null || t === "boolean") {
+		if (hydrating) return current;
+		current = cleanChildren(parent, current, marker);
+	} else if (t === "function") {
+		createRenderEffect(() => {
+			let v = value();
+			while (typeof v === "function") v = v();
+			current = insertExpression(parent, v, current, marker);
+		});
+		return () => current;
+	} else if (Array.isArray(value)) {
+		const array = [];
+		const currentArray = current && Array.isArray(current);
+		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
+			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+			return () => current;
+		}
+		if (hydrating) {
+			if (!array.length) return current;
+			if (marker === void 0) return current = [...parent.childNodes];
+			let node = array[0];
+			if (node.parentNode !== parent) return current;
+			const nodes = [node];
+			while ((node = node.nextSibling) !== marker) nodes.push(node);
+			return current = nodes;
+		}
+		if (array.length === 0) {
+			current = cleanChildren(parent, current, marker);
+			if (multi) return current;
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
+			current && cleanChildren(parent);
+			appendNodes(parent, array);
+		}
+		current = array;
+	} else if (value.nodeType) {
+		if (hydrating && value.parentNode) return current = multi ? [value] : value;
+		if (Array.isArray(current)) {
+			if (multi) return current = cleanChildren(parent, current, marker, value);
+			cleanChildren(parent, current, null, value);
+		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
+		else parent.replaceChild(value, parent.firstChild);
+		current = value;
+	}
+	return current;
+}
+function normalizeIncomingArray(normalized, array, current, unwrap) {
+	let dynamic = false;
+	for (let i = 0, len = array.length; i < len; i++) {
+		let item = array[i], prev = current && current[normalized.length], t;
+		if (item == null || item === true || item === false);
+		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
+		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
+		} else {
+			const value = String(item);
+			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
+			else normalized.push(document.createTextNode(value));
+		}
+	}
+	return dynamic;
+}
+function appendNodes(parent, array, marker = null) {
+	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
+}
+function cleanChildren(parent, current, marker, replacement) {
+	if (marker === void 0) return parent.textContent = "";
+	const node = replacement || document.createTextNode("");
+	if (current.length) {
+		let inserted = false;
+		for (let i = current.length - 1; i >= 0; i--) {
+			const el = current[i];
+			if (node !== el) {
+				const isParent = el.parentNode === parent;
+				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
+				else isParent && el.remove();
+			} else inserted = true;
+		}
+	} else parent.insertBefore(node, marker);
+	return [node];
+}
+var _tmpl$ = /*#__PURE__*/ template(\`<div><button>\`);
+function TestDataHkAttribute() {
+	const [count, setCount] = createSignal(0);
+	return (() => {
+		var _el$ = _tmpl$(), _el$2 = _el$.firstChild;
+		_el$2.$$click = () => setCount(count() + 1);
+		insert(_el$2, count);
+		return _el$;
+	})();
+}
+delegateEvents(["click"]);
+export { TestDataHkAttribute };
+"
+`;
+
+exports[`rolldown-plugin-solid dist should transform data-hk attribute warning 1`] = `
+"const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+const equalFn = (a, b) => a === b;
+const signalOptions = { equals: equalFn };
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+var Owner = null;
+let Transition = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value) => {
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
+		return writeSignal(s, value);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createRenderEffect(fn, value, options) {
+	updateComputation(createComputation(fn, value, false, STALE));
+}
+function untrack(fn) {
+	if (Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
+	}
+	if (Listener) {
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function handleError(err, owner = Owner) {
+	throw castError(err);
+}
+function reconcileArrays(parentNode, a, b) {
+	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
+	while (aStart < aEnd || bStart < bEnd) {
+		if (a[aStart] === b[bStart]) {
+			aStart++;
+			bStart++;
+			continue;
+		}
+		while (a[aEnd - 1] === b[bEnd - 1]) {
+			aEnd--;
+			bEnd--;
+		}
+		if (aEnd === aStart) {
+			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
+			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
+		} else if (bEnd === bStart) while (aStart < aEnd) {
+			if (!map || !map.has(a[aStart])) a[aStart].remove();
+			aStart++;
+		}
+		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+			const node = a[--aEnd].nextSibling;
+			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
+			parentNode.insertBefore(b[--bEnd], node);
+			a[aEnd] = b[bEnd];
+		} else {
+			if (!map) {
+				map = /* @__PURE__ */ new Map();
+				let i = bStart;
+				while (i < bEnd) map.set(b[i], i++);
+			}
+			const index = map.get(a[aStart]);
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
+		}
+	}
+}
+const $$EVENTS = "_$DX_DELEGATE";
+function template(html, isImportNode, isSVG, isMathML) {
+	let node;
+	const create = () => {
+		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
+		t.innerHTML = html;
+		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
+	};
+	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
+	fn.cloneNode = fn;
+	return fn;
+}
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
+	for (let i = 0, l = eventNames.length; i < l; i++) {
+		const name = eventNames[i];
+		if (!e.has(name)) {
+			e.add(name);
+			document.addEventListener(name, eventHandler);
+		}
+	}
+}
+function insert(parent, accessor, marker, initial) {
+	if (marker !== void 0 && !initial) initial = [];
+	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+}
+function isHydrating(node) {
+	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
+}
+function eventHandler(e) {
+	if (sharedConfig.registry && sharedConfig.events) {
+		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
+	}
+	let node = e.target;
+	const key = \`$$\${e.type}\`;
+	const oriTarget = e.target;
+	const oriCurrentTarget = e.currentTarget;
+	const retarget = (value) => Object.defineProperty(e, "target", {
+		configurable: true,
+		value
+	});
+	const handleNode = () => {
+		const handler = node[key];
+		if (handler && !node.disabled) {
+			const data = node[\`\${key}Data\`];
+			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
+			if (e.cancelBubble) return;
+		}
+		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
+		return true;
+	};
+	const walkUpTree = () => {
+		while (handleNode() && (node = node._$host || node.parentNode || node.host));
+	};
+	Object.defineProperty(e, "currentTarget", {
+		configurable: true,
+		get() {
+			return node || document;
+		}
+	});
+	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
+	if (e.composedPath) {
+		const path = e.composedPath();
+		retarget(path[0]);
+		for (let i = 0; i < path.length - 2; i++) {
+			node = path[i];
+			if (!handleNode()) break;
+			if (node._$host) {
+				node = node._$host;
+				walkUpTree();
+				break;
+			}
+			if (node.parentNode === oriCurrentTarget) break;
+		}
+	} else walkUpTree();
+	retarget(oriTarget);
+}
+function insertExpression(parent, value, current, marker, unwrapArray) {
+	const hydrating = isHydrating(parent);
+	if (hydrating) {
+		!current && (current = [...parent.childNodes]);
+		let cleaned = [];
+		for (let i = 0; i < current.length; i++) {
+			const node = current[i];
+			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
+			else cleaned.push(node);
+		}
+		current = cleaned;
+	}
+	while (typeof current === "function") current = current();
+	if (value === current) return current;
+	const t = typeof value, multi = marker !== void 0;
+	parent = multi && current[0] && current[0].parentNode || parent;
+	if (t === "string" || t === "number") {
+		if (hydrating) return current;
+		if (t === "number") {
+			value = value.toString();
+			if (value === current) return current;
+		}
+		if (multi) {
+			let node = current[0];
+			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
+			else node = document.createTextNode(value);
+			current = cleanChildren(parent, current, marker, node);
+		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
+		else current = parent.textContent = value;
+	} else if (value == null || t === "boolean") {
+		if (hydrating) return current;
+		current = cleanChildren(parent, current, marker);
+	} else if (t === "function") {
+		createRenderEffect(() => {
+			let v = value();
+			while (typeof v === "function") v = v();
+			current = insertExpression(parent, v, current, marker);
+		});
+		return () => current;
+	} else if (Array.isArray(value)) {
+		const array = [];
+		const currentArray = current && Array.isArray(current);
+		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
+			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+			return () => current;
+		}
+		if (hydrating) {
+			if (!array.length) return current;
+			if (marker === void 0) return current = [...parent.childNodes];
+			let node = array[0];
+			if (node.parentNode !== parent) return current;
+			const nodes = [node];
+			while ((node = node.nextSibling) !== marker) nodes.push(node);
+			return current = nodes;
+		}
+		if (array.length === 0) {
+			current = cleanChildren(parent, current, marker);
+			if (multi) return current;
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
+			current && cleanChildren(parent);
+			appendNodes(parent, array);
+		}
+		current = array;
+	} else if (value.nodeType) {
+		if (hydrating && value.parentNode) return current = multi ? [value] : value;
+		if (Array.isArray(current)) {
+			if (multi) return current = cleanChildren(parent, current, marker, value);
+			cleanChildren(parent, current, null, value);
+		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
+		else parent.replaceChild(value, parent.firstChild);
+		current = value;
+	}
+	return current;
+}
+function normalizeIncomingArray(normalized, array, current, unwrap) {
+	let dynamic = false;
+	for (let i = 0, len = array.length; i < len; i++) {
+		let item = array[i], prev = current && current[normalized.length], t;
+		if (item == null || item === true || item === false);
+		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
+		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
+		} else {
+			const value = String(item);
+			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
+			else normalized.push(document.createTextNode(value));
+		}
+	}
+	return dynamic;
+}
+function appendNodes(parent, array, marker = null) {
+	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
+}
+function cleanChildren(parent, current, marker, replacement) {
+	if (marker === void 0) return parent.textContent = "";
+	const node = replacement || document.createTextNode("");
+	if (current.length) {
+		let inserted = false;
+		for (let i = current.length - 1; i >= 0; i--) {
+			const el = current[i];
+			if (node !== el) {
+				const isParent = el.parentNode === parent;
+				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
+				else isParent && el.remove();
+			} else inserted = true;
+		}
+	} else parent.insertBefore(node, marker);
+	return [node];
+}
+var _tmpl$ = /*#__PURE__*/ template(\`<div><button>\`);
+function TestDataHkAttribute() {
+	const [count, setCount] = createSignal(0);
+	return (() => {
+		var _el$ = _tmpl$(), _el$2 = _el$.firstChild;
+		_el$2.$$click = () => setCount(count() + 1);
+		insert(_el$2, count);
+		return _el$;
+	})();
+}
+delegateEvents(["click"]);
+export { TestDataHkAttribute };
+"
+`;

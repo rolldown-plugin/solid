@@ -1,0 +1,37 @@
+---------------------------------------------------------------------------------------------|---------|---------|-------------------
+File                                                                                         | % Funcs | % Lines | Uncovered Line #s
+---------------------------------------------------------------------------------------------|---------|---------|-------------------
+All files                                                                                    |   88.00 |   78.32 |
+ dist\index.mjs                                                                              |   81.54 |   78.84 | 53,96-99,115,124,154,226-236,238-250,256,260-262,690-691,711,715-716,718-720,726-728,738-739,741-743,750-760,768-786,788-791,806-808,813-820,832-840,868-888,897-905,931-935,942-963,966-967,1016-1024,1027-1032,1035-1037,1048-1051,1063-1064,1112-1113,1116-1122,1151-1171,1173-1178,1209-1222,1228-1229,1231-1233,1251-1252,1267-1271,1302-1303,1351-1355,1365-1368,1417-1430,1604-1605,1628-1629,1656-1658,1661-1666,1669-1671,1679-1681,1690-1693,1754-1756,1767-1768,1797-1803,1805-1806,1811-1819,1821-1824,1873-1881,1884-1889,1894-1899,1901-1906,1913-1915,1927-1929,1931-1934,1949-1955,1966-1972,1974-1978,1980-1988,1990-1994,2002-2003,2008-2010,2056-2061,2165-2166,2170-2176,2213-2215,2277-2281,2326-2328,2387-2399,2453-2454,2475,2522-2526,2532-2538,2562-2574,2581-2584,2608-2623,2628-2635,2641-2646,2648-2655,2665-2666,2669-2675,2697-2701,2703-2712,2714,2724,2727-2730,2738-2743,2754-2756,2767-2768,2777,2781-2782,2788-2789,2812-2816,2818,2832-2841,2843-2855,2857,2890-2891,2916,2946,2956-2957,2963,2977,3035-3036,3062-3063,3083-3093,3112-3113,3116-3117,3132,3141-3142,3146,3158,3198-3211,3214-3215,3218,3240,3243,3248-3250,3258-3264,3302-3306,3316
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\VoidElements.ts       |  100.00 |  100.00 |
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\config.ts             |  100.00 |  100.00 |
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\dom\constants.ts      |  100.00 |  100.00 |
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\dom\element.ts        |   88.57 |   65.09 | 144-145,187-188,229-238,249,253-260,264-271,275-286,290-297,310-314,328-335,355,432-441,443,460-461,467-469,546-549,554-591,593-597,608-628,630-634,723-724,732-735,747-820,824-845,847,851-855,857-868,871-883,901-921,958-974,984-995,1043-1051,1062,1064,1066-1067,1069-1073,1077,1079,1081-1083,1086-1107,1111-1121,1135-1136,1143-1147,1154,1191-1193,1214-1215,1225-1245,1250-1254,1264-1266,1298,1485-1486,1495-1496,1503-1507,1512-1552,1554
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\dom\template.ts       |  100.00 |   88.60 | 73-76,157-161,199-200,207-221
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\index.ts              |  100.00 |   96.97 |
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\component.ts   |  100.00 |   53.37 | 44-46,82,84-138,140-200,212-216,218-226,231-235,237-239,297-306,319-323,336-337
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\fragment.ts    |  100.00 |   90.91 | 10-11
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\postprocess.ts |  100.00 |  100.00 |
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\preprocess.ts  |  100.00 |   41.67 | 11-24
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\transform.ts   |   90.91 |   82.04 | 47-48,76,79-82,84-87,100-106,109-113,198-203,205-211
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\utils.ts       |   83.78 |   80.95 | 59,102-103,132,159-164,180,189-191,256,260,312-317,332-333,360,366-371,387-388,390-400,402,404-417,427,430-436,442-450
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\validate.ts    |  100.00 |   81.40 | 64,74,79,85-89
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\ssr\element.ts        |   73.08 |   53.18 | 109-111,141-144,148-151,153-161,168,170-182,205-210,216-220,222-230,245-275,303-336,338-341,369-372,393-406,411-417,450-470,472-473,509,513-548,559-578,618-625,634-638,640-691,694,696-697,699-702,716
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\ssr\template.ts       |  100.00 |   98.48 |
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\universal\element.ts  |   91.67 |   59.95 | 86-89,94-167,171-192,194,200-201,217,232,242-244,253-254,356-357,361-362,368-372,376-413,415
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\universal\template.ts |   50.00 |   34.34 | 20-21,40-42,49-92,94-109
+ src\babel-plugin-jsx-dom-expressions\dom-expressions\constants.js                           |  100.00 |  100.00 |
+ src\babel-plugin-jsx-dom-expressions\index.ts                                               |  100.00 |  100.00 |
+ src\index.ts                                                                                |  100.00 |   98.44 |
+ src\plugin-transform-typescript\const-enum.ts                                               |   66.67 |   57.89 | 48-55,66,68,73-75,77-94
+ src\plugin-transform-typescript\create-class-features-plugin.ts                             |   33.33 |   61.76 | 18-20,24-27,48-53,55-58,60,64,74,78-83
+ src\plugin-transform-typescript\enum.ts                                                     |   83.33 |   55.98 | 36,52,75-76,99-104,116,124,128,185-191,193,218-248,289,291,295-296,298-309,312,319-321,323-328,355,359,365,369-372,374-376,378-379,381-388,390,400,402-412,414,419,425-426,428-429,431-432,434-436,439-456,465,469,475-479,483-496
+ src\plugin-transform-typescript\global-types.ts                                             |  100.00 |   63.64 | 9-10,15
+ src\plugin-transform-typescript\index.ts                                                    |   70.45 |   70.51 | 21-22,24-25,27-28,30,33,51-54,61-73,123-125,131-135,137,182-184,226,228-230,285,290-291,311-312,321,332-345,353-355,376,380,396,405-406,409-411,429-431,442,460,478,485-486,488,494,504,512,519,565,589-621,625-633,637,669,673,679-684,711,713-718,721,723-726,728
+ src\plugin-transform-typescript\namespace.ts                                                |   77.78 |   65.58 | 10,13,21-22,26-29,33,41-42,44,77-79,82,101,104-105,107-116,119-123,155-158,160-173,175-185,187-191,193,201,241,253,263-264
+ src\plugin-transform-typescript\plugin-syntax-typescript.ts                                 |   75.00 |   80.65 | 5-9
+ src\preset-typescript\index.ts                                                              |  100.00 |  100.00 |
+ src\preset-typescript\normalize-options.ts                                                  |  100.00 |  100.00 |
+ src\preset-typescript\plugin-rewrite-ts-imports.ts                                          |   50.00 |   46.15 | 14-16,18-26,28-31,33-37,39-43,67-74
+ tests\helpers\index.ts                                                                      |  100.00 |  100.00 |
+---------------------------------------------------------------------------------------------|---------|---------|-------------------
