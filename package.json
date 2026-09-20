@@ -37,7 +37,7 @@
     "@gameroman/config": "0.3.0",
     "@solidjs/web": "2.0.0-rc.8",
     "@types/bun": "1.4.2",
-    "@types/node": "26.5.1",
+    "@types/node": "26.6.2",
     "rolldown": "1.2.8",
     "solid-js": "2.0.0-rc.8",
     "tsdown": "0.23.0",
