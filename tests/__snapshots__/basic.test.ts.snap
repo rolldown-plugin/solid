@@ -1,79 +1,5 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`rolldown-plugin-solid src should transform basic SolidJS component 1`] = `
-"import { createComponent, delegateEvents, insert, render, template } from "@solidjs/web";
-import { createSignal } from "solid-js";
-var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
-const App = () => {
-	const [count, setCount] = createSignal(0);
-	const inc = (by = 1) => setCount(count() + by);
-	var _el$ = _tmpl$();
-	_el$.$$click = () => inc(1);
-	insert(_el$, count);
-	return _el$;
-};
-render(() => createComponent(App, {}), document.getElementById("app"));
-delegateEvents(["click"]);
-"
-`;
-
-exports[`rolldown-plugin-solid dist should transform basic SolidJS component 1`] = `
-"import { createComponent, delegateEvents, insert, render, template } from "@solidjs/web";
-import { createSignal } from "solid-js";
-var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
-const App = () => {
-	const [count, setCount] = createSignal(0);
-	const inc = (by = 1) => setCount(count() + by);
-	var _el$ = _tmpl$();
-	_el$.$$click = () => inc(1);
-	insert(_el$, count);
-	return _el$;
-};
-render(() => createComponent(App, {}), document.getElementById("app"));
-delegateEvents(["click"]);
-"
-`;
-
-exports[`rolldown-plugin-solid src should transform component with hydratable option 1`] = `
-"import { createComponent, delegateEvents, getNextElement, insert, render, runHydrationEvents, scope, template } from "@solidjs/web";
-import { createSignal } from "solid-js";
-var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
-const App = () => {
-	const [count, setCount] = createSignal(0);
-	const inc = (by = 1) => setCount(count() + by);
-	var _el$ = getNextElement(_tmpl$);
-	_el$.$$click = () => inc(1);
-	insert(_el$, scope(() => {
-		return count();
-	}));
-	runHydrationEvents();
-	return _el$;
-};
-render(() => createComponent(App, {}), document.getElementById("app"));
-delegateEvents(["click"]);
-"
-`;
-
-exports[`rolldown-plugin-solid dist should transform component with hydratable option 1`] = `
-"import { createComponent, delegateEvents, getNextElement, insert, render, runHydrationEvents, scope, template } from "@solidjs/web";
-import { createSignal } from "solid-js";
-var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
-const App = () => {
-	const [count, setCount] = createSignal(0);
-	const inc = (by = 1) => setCount(count() + by);
-	var _el$ = getNextElement(_tmpl$);
-	_el$.$$click = () => inc(1);
-	insert(_el$, scope(() => {
-		return count();
-	}));
-	runHydrationEvents();
-	return _el$;
-};
-render(() => createComponent(App, {}), document.getElementById("app"));
-delegateEvents(["click"]);
-"
-`;
-
 exports[`rolldown-plugin-solid should transform basic SolidJS component 1`] = `
 "import { createComponent, delegateEvents, insert, render, template } from "@solidjs/web";
 import { createSignal } from "solid-js";
@@ -82,7 +8,7 @@ const App = () => {
 	const [count, setCount] = createSignal(0);
 	const inc = (by = 1) => setCount(count() + by);
 	var _el$ = _tmpl$();
-	_el$.$$click = () => inc(1);
+	_el$._$$click = () => inc(1);
 	insert(_el$, count);
 	return _el$;
 };
@@ -99,7 +25,7 @@ const App = () => {
 	const [count, setCount] = createSignal(0);
 	const inc = (by = 1) => setCount(count() + by);
 	var _el$ = getNextElement(_tmpl$);
-	_el$.$$click = () => inc(1);
+	_el$._$$click = () => inc(1);
 	insert(_el$, scope(() => {
 		return count();
 	}));
