@@ -36,7 +36,7 @@
     "@biomejs/biome": "2.6.2",
     "@gameroman/config": "0.3.0",
     "@solidjs/web": "2.0.0-rc.17",
-    "@types/bun": "1.4.3",
+    "@types/bun": "1.4.4",
     "@types/node": "26.6.5",
     "rolldown": "1.2.15",
     "solid-js": "2.0.0-rc.17",
