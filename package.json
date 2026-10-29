@@ -40,7 +40,7 @@
     "@types/node": "26.6.5",
     "rolldown": "1.2.15",
     "solid-js": "2.0.0-rc.19",
-    "tsdown": "0.23.2",
+    "tsdown": "0.23.3",
     "typescript": "7.0.2"
   },
   "peerDependencies": {
